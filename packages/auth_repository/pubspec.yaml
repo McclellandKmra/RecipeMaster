@@ -10,7 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  email_validator: '^2.1.17'
 
 dev_dependencies:
   flutter_test:

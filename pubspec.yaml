@@ -57,6 +57,14 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/
+    - assets/images/
+  fonts:
+    - family: JustAnotherHand
+      fonts:
+        - asset: assets/fonts/JustAnotherHand-Regular.ttf
+    
 
   # To add assets to your application, add an assets section, like this:
   # assets:
