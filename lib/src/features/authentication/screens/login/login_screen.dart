@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart';
+import '../../controllers/login/login_controller.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+   const LoginScreen({super.key});
 
-  bool validateEmail(String email) {
-    return EmailValidator.validate(email);
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final LoginController _controller = LoginController();
+
+  late final TextEditingController emailController;
+  late final TextEditingController passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
   }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +36,7 @@ class LoginScreen extends StatelessWidget {
         children: [
           // Background Image
           Positioned.fill(
-            child: Image.asset(
+            child: Image.asset( //Background Image
               'assets/images/Background.png',
               fit: BoxFit.cover,
             ),
@@ -29,13 +50,17 @@ class LoginScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 0),
-                  Image.asset(
+                  Image.asset( //Logo Image
                     'assets/images/Logo.png',
                     height: 250,
                   ),
+
                   SizedBox(height: 60),
-                  TextField(
+                  
+                  TextField( //Email Field
+                    controller: emailController,
                     decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.email),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
@@ -54,9 +79,14 @@ class LoginScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
+
                   const SizedBox(height: 20), // Add spacing between fields
-                  TextField(
+
+                  TextField( //Password Field
+                    controller: passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.key),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
@@ -74,6 +104,29 @@ class LoginScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
+
+                  const SizedBox(height: 50),
+
+                  SizedBox( //Login Button
+                    height: 50,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => _controller.handleLogin(context, emailController, passwordController), 
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
+                        foregroundColor: WidgetStateProperty.all<Color>(Color(0xFFFFFFFF)),
+                      ),
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          fontFamily: 'JustAnotherHand',
+                          fontSize: 30
+                        ),
+                      
+                      ),
+                      
+                      ),
+                    ),
                 ],
               ),
             ),
