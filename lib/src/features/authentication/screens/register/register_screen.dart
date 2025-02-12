@@ -1,30 +1,37 @@
 import 'package:flutter/material.dart';
-import '../../controllers/login/login_controller.dart';
+import '../../controllers/register/register_controller.dart';
 
-class LoginScreen extends StatefulWidget {
-   const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+   const RegisterScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final LoginController _controller = LoginController();
+class _RegisterScreenState extends State<RegisterScreen> {
+  final RegisterController _controller = RegisterController();
 
   late final TextEditingController emailController;
+  late final TextEditingController emailConfirmController;
   late final TextEditingController passwordController;
+  late final TextEditingController passwordConfirmController;
 
   @override
   void initState() {
     super.initState();
     emailController = TextEditingController();
+    emailConfirmController = TextEditingController();
     passwordController = TextEditingController();
+    passwordConfirmController = TextEditingController();
+
   }
 
   @override
   void dispose() {
     emailController.dispose();
+    emailConfirmController.dispose();
     passwordController.dispose();
+    passwordConfirmController.dispose();
     super.dispose();
   }
 
@@ -83,6 +90,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 20), // Add spacing between fields
 
+                  TextField( //Email Field
+                    controller: emailConfirmController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      hintText: 'Confirm Email',
+                      hintStyle: TextStyle(
+                        color: const Color.fromARGB(127, 255, 255, 255),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      filled: true,
+                      fillColor: Color(0xFF157145),
+                    ),
+                    style: TextStyle(
+                      fontFamily: 'JustAnotherHand',
+                      fontSize: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
                   TextField( //Password Field
                     controller: passwordController,
                     obscureText: true,
@@ -106,19 +138,49 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 50),
+                  SizedBox(height: 20),
 
-                  SizedBox( //Login Button
+                  TextField( //Password Field
+                    controller: passwordConfirmController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.key),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      hintText: 'Confirm Password',
+                      hintStyle: TextStyle(
+                        color: const Color.fromARGB(127, 255, 255, 255),
+                      ),
+                      filled: true,
+                      fillColor: Color(0xFF157145),
+                    ),
+                    style: TextStyle(
+                      fontFamily: 'JustAnotherHand',
+                      fontSize: 30,
+                      color: Colors.white,
+                    ),
+                  ),
+ 
+                  Text(
+                    "Password must be at least 8 characters long",
+                    style: TextStyle(color: Colors.white),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  SizedBox( //Register Button
                     height: 50,
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () => _controller.handleLogin(context, emailController, passwordController), 
+                      onPressed: () => _controller.handleRegister(context, emailController, emailConfirmController, passwordController, passwordConfirmController), 
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
                         foregroundColor: WidgetStateProperty.all<Color>(Color(0xFFFFFFFF)),
                       ),
                       child: Text(
-                        "Login",
+                        "Sign Up",
                         style: TextStyle(
                           fontFamily: 'JustAnotherHand',
                           fontSize: 30
@@ -127,17 +189,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
 
                   TextButton( //Register Button
-                    onPressed: () => _controller.handleRegisterButton(context),
+                    onPressed: () => _controller.handleLoginButton(context),
                     child: const Text.rich(
                       TextSpan(
                         style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
-                        text: "Don't have an account?",
+                        text: "Have an account?",
                         children: [
                           TextSpan(
-                            text: " Sign Up!",
+                            text: " Log In!",
                             style: TextStyle(color: Color.fromARGB(255, 4, 226, 255))
                             ),
                         ]
