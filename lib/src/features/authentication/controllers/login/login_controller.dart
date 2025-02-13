@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import '../../../home/home_screen.dart';
+import '../../../home/screens/home_screen.dart';
 import '../../screens/register/register_screen.dart';
 
 class LoginController {
