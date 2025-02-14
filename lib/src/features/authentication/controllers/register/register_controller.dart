@@ -34,9 +34,6 @@ class RegisterController {
       return;
     }
 
-    print(password);
-    print(passwordConfirmation);
-
     if (password != passwordConfirmation) {
       _showSnackBar(context, "Provided password does not match");
       return;
