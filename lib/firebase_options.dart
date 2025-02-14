@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -52,12 +53,12 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBv4nCNOwwjC6oxg1vvWMoDv0aN8BlnLso',
-    appId: '1:534536436533:android:9eb12fccfdf1f7b160aa7c',
-    messagingSenderId: '534536436533',
-    projectId: 'recipemaster-cd4a6',
-    storageBucket: 'recipemaster-cd4a6.firebasestorage.app',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_OPTIONS_API_KEY']!,
+    appId: dotenv.env['FIREBASE_OPTIONS_API_ID']!,
+    messagingSenderId: dotenv.env['FIREBASE_OPTIONS_MSG_SENDER_ID']!,
+    projectId: dotenv.env['recipemaster-cd4a6']!,
+    storageBucket: dotenv.env['recipemaster-cd4a6.firebasestorage.app']!,
   );
 
   
