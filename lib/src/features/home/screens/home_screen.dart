@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../controllers/home_controller.dart';
+//import '../controllers/home_controller.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 
 class HomeScreen extends StatefulWidget {
@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final HomeController _controller = HomeController();
+  //final HomeController _controller = HomeController();
 
   @override
   void initState() {
