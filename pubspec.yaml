@@ -30,6 +30,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - .env
   fonts:
     - family: JustAnotherHand
       fonts:

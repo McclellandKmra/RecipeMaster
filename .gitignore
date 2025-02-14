@@ -12,6 +12,8 @@
 .swiftpm/
 migrate_working_dir/
 android/app/google-services.json
+.env
+firebase.json
 
 # IntelliJ related
 *.iml
@@ -45,4 +47,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-.env
+firebase.json
+firebase.json

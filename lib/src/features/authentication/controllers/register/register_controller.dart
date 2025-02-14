@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../screens/login/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterController {
   final TextEditingController emailController = TextEditingController();
@@ -8,7 +9,7 @@ class RegisterController {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordConfirmController = TextEditingController();
 
-  void handleRegister(BuildContext context, TextEditingController emailController, TextEditingController emailConfirmController, TextEditingController passwordController, TextEditingController passwordConfirmController) {
+  void handleRegister(BuildContext context, TextEditingController emailController, TextEditingController emailConfirmController, TextEditingController passwordController, TextEditingController passwordConfirmController) async {
     String email = emailController.text.trim();
     String emailConfirmation = emailConfirmController.text.trim();
     String password = passwordController.text.trim();
@@ -25,7 +26,7 @@ class RegisterController {
     }
 
     if (password.length < 8) {
-      _showSnackBar(context, "Passwords must be at least 8 characters");
+      _showSnackBar(context, "Provided password is too weak");
        return;
     }
 
@@ -38,9 +39,35 @@ class RegisterController {
       _showSnackBar(context, "Provided password does not match");
       return;
     }
+
     
-    //TODO
-    //Implement Firebase user auth
+    try{
+      final auth = FirebaseAuth.instance;
+      await auth.createUserWithEmailAndPassword(email: email, password: password);
+    }
+    on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        _showSnackBar(context, "This email has already been registered");
+        return;
+      }
+      else if (e.code == 'invalid-email') {
+        _showSnackBar(context, "Please provide a valid email address");
+        return;
+      }
+      else if (e.code == "weak-password") {
+        _showSnackBar(context, "Provided password is too weak");
+        return;
+      }
+      else {
+        _showSnackBar(context, "FirebaseAuthException: ${e.message}");
+        return;
+      }
+    }
+    catch (e) {
+      _showSnackBar(context, "An unexpected error has occured");
+      return;
+    }
+    
 
     Navigator.pushReplacement(
       context, 

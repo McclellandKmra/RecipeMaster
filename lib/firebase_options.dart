@@ -53,13 +53,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static FirebaseOptions android = FirebaseOptions(
-    apiKey: dotenv.env['FIREBASE_OPTIONS_API_KEY']!,
-    appId: dotenv.env['FIREBASE_OPTIONS_API_ID']!,
-    messagingSenderId: dotenv.env['FIREBASE_OPTIONS_MSG_SENDER_ID']!,
-    projectId: dotenv.env['recipemaster-cd4a6']!,
-    storageBucket: dotenv.env['recipemaster-cd4a6.firebasestorage.app']!,
+  static final FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.get('FIREBASE_OPTIONS_API_KEY'),
+    appId: dotenv.get('FIREBASE_OPTIONS_APP_ID'),
+    messagingSenderId: dotenv.get('FIREBASE_OPTIONS_MSG_SENDER_ID'),
+    projectId: dotenv.get('FIREBASE_OPTIONS_PROJECT_ID'),
+    storageBucket: dotenv.get('FIREBASE_OPTIONS_STORAGE_BUCKET'),
   );
-
-  
 }
