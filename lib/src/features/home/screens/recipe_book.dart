@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../../../utils/widgets/recipe_item.dart';
+import '../controllers/recipe_book_controller.dart';
 
 class RecipeBookScreen extends StatefulWidget {
   final List<Recipe> recipes;
@@ -14,6 +15,11 @@ class RecipeBookScreen extends StatefulWidget {
 class _RecipeBookScreenState extends State<RecipeBookScreen> {
   final PageController  _pageController = PageController();
   final TextEditingController _pageTextController = TextEditingController();
+  final RecipeBookController _recipeBookController = RecipeBookController();
+
+
+  //temporary, until actual recipe adding is supported
+  List<String> tags = ["Italian", "Pasta", "Quick"];
 
   int recipesPerPage = 6;
   int currPage = 0;
@@ -38,7 +44,34 @@ class _RecipeBookScreenState extends State<RecipeBookScreen> {
       ),
       child: Column(
         children: [
-          SizedBox(height: 65),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0, top: 3), // Adjust padding as needed
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "My Recipes",
+                  style: TextStyle(
+                    fontFamily: "JustAnotherHand",
+                    fontSize: 30,
+                  ),
+                ),
+                Padding (
+                  padding: const EdgeInsets.only(right: 5.0),
+                  child: IconButton(
+                    icon: Icon(Icons.add_box_rounded),
+                    iconSize: 30,
+                    
+                    onPressed: () {
+                      _recipeBookController.addRecipe("Spaghetti Carbonara", "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE", tags);
+                      // Add your onPressed code here
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 13),
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -85,7 +118,6 @@ class _RecipeBookScreenState extends State<RecipeBookScreen> {
               )
             ],
           ),
-          
         ],
       ),
     );

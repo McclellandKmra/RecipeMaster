@@ -74,7 +74,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("Home"),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: Text(
+            "Home",
+            style: TextStyle(
+              fontFamily: "JustAnotherHand",
+              fontSize: 50,
+            ),
+          ),
+        ),
         backgroundColor: Color.fromARGB(255, 78, 143, 163),
         actions: [
           Padding(
