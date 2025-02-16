@@ -10,10 +10,7 @@ class RecipeBookController {
         'imageUrl': imageUrl,
         'tags': tags
       });
-      print("recipe added");
-    } catch(e) {
-      print("adding recipe failed");
-    }
+    } catch(e) {}
 
   }
 }
