@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 //import '../controllers/home_controller.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 import 'recipe_book.dart';
 import '../models/recipe.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
    const HomeScreen({super.key});
@@ -13,50 +15,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   //final HomeController _controller = HomeController();
+  List<Recipe> recipes = [];
 
-  final List<Recipe> recipes = [
-     Recipe(
-      imageUrl: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE",
-      name: "Spaghetti Carbonara",
-      tags: ["Italian", "Pasta", "Quick"],
-    ),
-    Recipe(
-      imageUrl: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE",
-      name: "Spaghetti Carbonara",
-      tags: ["Italian", "Pasta", "Quick"],
-    ),
-    Recipe(
-      imageUrl: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE",
-      name: "Spaghetti Carbonara",
-      tags: ["Italian", "Pasta", "Quick"],
-    ),
-    Recipe(
-      imageUrl: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE",
-      name: "Spaghetti Carbonara",
-      tags: ["Italian", "Pasta", "Quick"],
-    ),
-    Recipe(
-      imageUrl: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE",
-      name: "Spaghetti Carbonara",
-      tags: ["Italian", "Pasta", "Quick"],
-    ),
-    Recipe(
-      imageUrl: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE",
-      name: "Spaghetti Carbonara",
-      tags: ["Italian", "Pasta", "Quick"],
-    ),
-    Recipe(
-      imageUrl: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE",
-      name: "Spaghetti Carbonara",
-      tags: ["Italian", "Pasta", "Quick"],
-    ),
-    Recipe(
-      imageUrl: "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTknpx5O_1wniDECeS2QHTqNSQKnbhuWSsgJ4nPi9GE1uHFj9GAAx5-8ha-VEh84gbc7PzQSb0Uf4bXG-ZDTNZILZ0AHjdZgXng0hirTfE",
-      name: "Spaghetti Carbonara",
-      tags: ["Italian", "Pasta", "Quick"],
-    ),
-    // Add more recipes as needed
-  ];
+  Stream<List<Recipe>> _recipeStream() {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('Error fetching user');
+      }
+      String userID = user.uid;
+
+      CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userID).collection('recipes');
+      return userRecipesCollection.snapshots().map((snapshot) {
+        return snapshot.docs.map((doc) {
+          return Recipe.fromMap(doc.data() as Map<String, dynamic>);
+        }).toList();
+      });
+    }
+    catch (e) {
+      throw Exception('Error fetching recipes');
+    }
+  }
+  
 
   @override
   void initState() {
@@ -108,7 +88,22 @@ class _HomeScreenState extends State<HomeScreen> {
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: RecipeBookScreen(recipes: recipes),
+              child: StreamBuilder<List<Recipe>>( // Use StreamBuilder here
+                stream: _recipeStream(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+
+                  List<Recipe> recipes = snapshot.data ?? []; // Get the recipe list
+
+                  return RecipeBookScreen(recipes: recipes); // Pass the recipes
+                },
+              ),
             ),
           ),
         ],
