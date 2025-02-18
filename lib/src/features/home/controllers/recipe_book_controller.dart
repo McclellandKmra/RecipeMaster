@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class RecipeBookController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> addRecipe(String name, String imageUrl, List<String> tags) async{
+  Future<void> addRecipe(String name, String imageUrl, List<String> tags, List<Map<String, String>> ingredients, List<String> steps) async{
     try {
       //Get current user's ID
       User? user = FirebaseAuth.instance.currentUser;
@@ -20,7 +20,9 @@ class RecipeBookController {
         'name': name,
         'imageUrl': imageUrl,
         'tags': tags,
-        'createdAt': FieldValue.serverTimestamp() 
+        'createdAt': FieldValue.serverTimestamp() ,
+        'ingredients': ingredients,
+        'steps': steps
       });
     } 
     catch(e) {
