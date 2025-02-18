@@ -14,9 +14,9 @@ class RecipeBookController {
       String userID = user.uid;
 
       //Specify the subcollection path
-      CollectionReference userRedcipesCollection = firestore.collection('users').doc(userID).collection('recipes');
+      CollectionReference userRecipesCollection = firestore.collection('users').doc(userID).collection('recipes');
 
-      await userRedcipesCollection.add({
+      await userRecipesCollection.add({
         'name': name,
         'imageUrl': imageUrl,
         'tags': tags,

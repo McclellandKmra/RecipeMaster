@@ -52,6 +52,11 @@ Widget buildMenuItems(BuildContext context) {
           title: const Text('Edit Recipe Tags'),
           onTap: (){},
         ),
+        ListTile(
+          leading: const Icon(Icons.person_2_outlined),
+          title: const Text('Account'),
+          onTap: (){},
+        ),
         const Divider(color: Colors.black),
         ListTile(
           leading: const Icon(Icons.logout),
