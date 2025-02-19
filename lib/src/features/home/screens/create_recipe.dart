@@ -3,6 +3,8 @@ import '../models/recipe.dart';
 import '../../../utils/widgets/recipe_item.dart';
 import '../controllers/recipe_book_controller.dart';
 import 'recipe_book.dart';
+import '../../../utils/widgets/ingredient_input.dart';
+import '../../../constants/tags.dart';
 
 class CreateRecipeScreen extends StatefulWidget {
   final VoidCallback onClose;
@@ -21,6 +23,7 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
   List<TextEditingController> ingredientAmounts = [];
   List<TextEditingController> steps = [];
   List<String> tags = [];
+  String? _selectedTag;
 
  
 
@@ -54,7 +57,18 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
   }
 
   void _addTag(String tag) {
-    
+    if (!tags.contains(tag)) {
+      setState(() {
+        tags.add(tag);
+        _selectedTag = null;
+      });
+    }
+  }
+
+  void _removeTag(String tag) {
+    setState(() {
+      tags.remove(tag);
+    });
   }
 
   @override
@@ -81,6 +95,43 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
                 ),
                 IconButton(onPressed: widget.onClose, icon: Icon(Icons.close))
               ]
+            ),
+            SizedBox(height: 15),
+            TextField(
+              spellCheckConfiguration: SpellCheckConfiguration(),
+              controller: _nameController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
+                hintText: 'Recipe Name',
+                filled: true,
+                fillColor: Color.fromARGB(255, 83, 114, 99),
+                hintStyle: TextStyle(
+                  color: const Color.fromARGB(127, 255, 255, 255),
+                ),
+              ),
+              style: TextStyle(
+                fontSize: 20,
+                color: Color(0xFFFFFFFF),
+              ),
+            ),
+            SizedBox(height: 15),
+            DropdownButton<String>(
+              value: _selectedTag,
+              hint: Text("Select a Tag"),
+              items: availableTags
+                .where((tag) => !tags.contains(tag))
+                .map((tag) => DropdownMenuItem(value: tag, child: Text(tag)))
+                .toList(),
+              onChanged: (tag) {
+                if (tag != null) _addTag(tag);
+              },
+            ),
+            Wrap(
+              spacing: 8.0,
+              children: tags.map((tag) => Chip(label: Text(tag),deleteIcon: Icon(Icons.close),onDeleted: () => _removeTag(tag),backgroundColor: Colors.green[200])).toList(),   
             ),
           ],
         ),
