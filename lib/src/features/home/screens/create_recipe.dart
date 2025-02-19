@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../../../utils/widgets/recipe_item.dart';
-import '../controllers/create_recipe_controller.dart';
 import '../controllers/recipe_book_controller.dart';
+import 'recipe_book.dart';
 
 class CreateRecipeScreen extends StatefulWidget {
-  const CreateRecipeScreen({super.key});
+  final VoidCallback onClose;
+  const CreateRecipeScreen({super.key, required this.onClose});
 
   @override
   _CreateRecipeScreenState createState() => _CreateRecipeScreenState();
@@ -13,7 +14,6 @@ class CreateRecipeScreen extends StatefulWidget {
 
 class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
   final RecipeBookController _recipeController = RecipeBookController();
-
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController imageUrlController = TextEditingController();
 
@@ -21,6 +21,8 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
   List<TextEditingController> ingredientAmounts = [];
   List<TextEditingController> steps = [];
   List<String> tags = [];
+
+ 
 
   void _addIngredient() {
     setState(() {
@@ -51,10 +53,38 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
     });
   }
 
+  void _addTag(String tag) {
+    
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        width: MediaQuery.of(context).size.width * 0.8,  // 80% of screen width
+        height: MediaQuery.of(context).size.height * 0.7, // 70% of screen height
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Create Recipe",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+                IconButton(onPressed: widget.onClose, icon: Icon(Icons.close))
+              ]
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
