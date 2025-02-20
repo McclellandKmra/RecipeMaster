@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../../../utils/widgets/recipe_item.dart';
@@ -6,6 +7,9 @@ import 'recipe_book.dart';
 import '../../../utils/widgets/ingredient_input.dart';
 import '../../../utils/widgets/step_input.dart';
 import '../../../constants/tags.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:permission_handler/permission_handler.dart';
 
 
 class CreateRecipeScreen extends StatefulWidget {
@@ -27,7 +31,29 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
   List<String> tags = [];
   String? _selectedTag;
 
- 
+  final ImagePicker picker = ImagePicker();
+  XFile? image;
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _pickImage() async {
+    var status = await Permission.storage.request();
+    if (status.isGranted) {
+      final XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedImage != null) {
+        setState(() {
+          image = pickedImage;
+        });
+      }
+    }
+    else {
+      _showSnackBar(context, "Image selection permission denied");
+    } 
+  }
 
   void _addIngredient() {
     setState(() {
@@ -99,6 +125,12 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
                   IconButton(onPressed: widget.onClose, icon: Icon(Icons.close))
                 ]
               ),
+              IconButton(
+                onPressed: _pickImage, 
+                iconSize: 30,
+                icon: Icon(Icons.image_outlined)
+              ),
+              Text("Upload an image for your recipe"),
               SizedBox(height: 15),
               TextField(
                 spellCheckConfiguration: SpellCheckConfiguration(),
