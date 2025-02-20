@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 
-class IngredientInput extends StatelessWidget{
-  final TextEditingController nameController;
-  final TextEditingController amountController;
+class StepInput extends StatelessWidget {
+  final TextEditingController stepController;
   final VoidCallback onRemove;
 
-  const IngredientInput({
+  const StepInput({
     super.key,
-    required this.nameController,
-    required this.amountController,
-    required this.onRemove,
+    required this.stepController,
+    required this.onRemove
   });
 
   @override
   Widget build(BuildContext context) {
-    
     return Card(
       elevation: 3,
       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
@@ -27,17 +24,8 @@ class IngredientInput extends StatelessWidget{
               flex: 4,
               child: TextField(
                 spellCheckConfiguration: SpellCheckConfiguration(),
-                controller: nameController,
-                decoration: InputDecoration(labelText: "Ingredient Name"),
-              ),
-            ),
-            SizedBox(width: 10),
-            SizedBox(
-              width: 65,
-              child: TextField(
-                spellCheckConfiguration: SpellCheckConfiguration(),
-                controller: amountController,
-                decoration: InputDecoration(labelText: "Amount"),
+                controller: stepController,
+                decoration: InputDecoration(labelText: "Step"),
               ),
             ),
             IconButton(
