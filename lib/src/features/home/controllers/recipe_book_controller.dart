@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class RecipeBookController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> addRecipe(String name, String imageUrl, List<String> tags, List<Map<String, String>> ingredients, List<String> steps) async{
+  Future<void> addRecipe(String name, String imageUrl, List<String> tags, List<Map<String, String>> ingredients, List<TextEditingController> steps) async{
     try {
       //Get current user's ID
       User? user = FirebaseAuth.instance.currentUser;
@@ -12,6 +13,8 @@ class RecipeBookController {
         throw Exception('Error fetching user');
       }
       String userID = user.uid;
+
+      List<String> stepTexts = steps.map((controller) => controller.text).toList();
 
       //Specify the subcollection path
       CollectionReference userRecipesCollection = firestore.collection('users').doc(userID).collection('recipes');
@@ -22,7 +25,7 @@ class RecipeBookController {
         'tags': tags,
         'createdAt': FieldValue.serverTimestamp() ,
         'ingredients': ingredients,
-        'steps': steps
+        'steps': stepTexts
       });
     } 
     catch(e) {

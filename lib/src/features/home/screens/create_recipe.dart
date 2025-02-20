@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../../../utils/widgets/recipe_item.dart';
@@ -8,7 +7,12 @@ import '../../../utils/widgets/ingredient_input.dart';
 import '../../../utils/widgets/step_input.dart';
 import '../../../constants/tags.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:path/path.dart';
+import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 
 
@@ -27,12 +31,56 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
 
   List<TextEditingController> ingredientNames = [];
   List<TextEditingController> ingredientAmounts = [];
+  List<Map<String, String>> ingredients = [];
   List<TextEditingController> steps = [];
   List<String> tags = [];
   String? _selectedTag;
 
   final ImagePicker picker = ImagePicker();
   XFile? image;
+  File? _imageFile;
+  String? _imageUrl;
+
+  Future<void> _createRecipe(BuildContext context) async {
+    _imageUrl = await _uploadImage();
+
+    if (_imageUrl == null) {
+      _showSnackBar(context, "Image upload failed");
+      return;
+    }
+
+    try {
+      _recipeController.addRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps);
+    }
+    catch (e) {
+      _showSnackBar(context, "Error uploading recipe");
+    }
+  }
+
+  Future<String?> _uploadImage() async {
+    if (_imageFile == null) return null;
+    try {
+      String fileName = basename(_imageFile!.path);
+      Reference storageRef = FirebaseStorage.instance.ref().child('recipe_images/$fileName');
+
+      UploadTask uploadTask = storageRef.putFile(_imageFile!);
+      TaskSnapshot snapshot = await uploadTask;
+
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  void _createIngredientsMap() {
+    for (int i = 0; i < ingredientNames.length; i++) {
+      ingredients.add({
+        'name': ingredientNames[i].text.trim(),
+        'amount': ingredientAmounts[i].text.trim()
+      });
+    }
+  }
 
   void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -41,18 +89,13 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
   }
 
   Future<void> _pickImage() async {
-    var status = await Permission.storage.request();
-    if (status.isGranted) {
-      final XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
-      if (pickedImage != null) {
-        setState(() {
-          image = pickedImage;
-        });
-      }
+    image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _imageFile = (image != null) ? File(image!.path) : null;
+      });
     }
-    else {
-      _showSnackBar(context, "Image selection permission denied");
-    } 
   }
 
   void _addIngredient() {
@@ -131,6 +174,18 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
                 icon: Icon(Icons.image_outlined)
               ),
               Text("Upload an image for your recipe"),
+              if (_imageFile != null) ...[
+                SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(
+                    _imageFile!,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  )
+                ),
+              ],
               SizedBox(height: 15),
               TextField(
                 spellCheckConfiguration: SpellCheckConfiguration(),
@@ -213,6 +268,14 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
               ElevatedButton(
                 onPressed: _addStep,
                 child: Text("Add Step"),
+              ),
+              ElevatedButton(
+                onPressed: () => _createRecipe(context), 
+                style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
+                        foregroundColor: WidgetStateProperty.all<Color>(Color(0xFFFFFFFF)),
+                ),
+                child: Text("Create Recipe"),
               ),
             ],
           ),
