@@ -32,4 +32,55 @@ class RecipeBookController {
       throw Exception('Error adding recipe');
     }
   }
+
+  Future<void> editRecipe(String name, String imageUrl, List<String> tags, List<Map<String, String>> ingredients, List<TextEditingController> steps) async {
+    try {
+      //Get current user's ID
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('Error fetching user');
+      }
+      String userId = user.uid;
+
+      String? recipeId = await getRecipeId(name, userId);
+
+      List<String> stepTexts = steps.map((controller) => controller.text).toList();
+
+      //Specify the document path
+      DocumentReference recipeDocument = firestore.collection('users').doc(userId).collection('recipes').doc(recipeId);
+
+      //Logic to update the database values
+      await recipeDocument.update ({
+        "name" : name,
+        "tags" : tags,
+        "ingredients" : ingredients,
+        "steps" : stepTexts,
+        "imageUrl" : imageUrl,
+        "timestamp" : FieldValue.serverTimestamp(),
+      });
+    } 
+    catch(e) {
+      throw Exception('Error adding recipe');
+    }
+  }
+
+  Future<String?> getRecipeId(String recipeName, String userID) async {
+    try {
+      final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users').doc(userID).collection('recipes')
+        .where('name', isEqualTo: recipeName)
+        .limit(1)
+        .get();
+      
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.id;
+      }
+      else {
+        return null;
+      }
+    }
+    catch (e) {
+      return null;
+    }
+  }
 }

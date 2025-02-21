@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/home/models/recipe.dart';
+import '../../features/home/screens/edit_recipe.dart';
 
 class RecipeItem extends StatelessWidget {
   final Recipe recipe;
