@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:recipemaster/src/features/recipeDetails/screens/recipe_details_screen.dart';
 import '../../features/home/models/recipe.dart';
-import '../../features/home/screens/edit_recipe.dart';
+import '../../features/recipeDetails/screens/recipe_details_screen.dart';
 
 class RecipeItem extends StatelessWidget {
   final Recipe recipe;
@@ -16,7 +17,14 @@ class RecipeItem extends StatelessWidget {
         title: Text(recipe.name),
         subtitle: Text(recipe.tags.join(", ")),
         trailing: Icon(Icons.star_border),
-        onTap: (){},
+        onTap: (){
+           Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RecipeDetailsScreen(recipeName: recipe.name),
+            ),
+           );
+        },
       )
     );
   }

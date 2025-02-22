@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../features/home/controllers/home_controller.dart';
+import '../../features/home/screens/home_screen.dart';
 
 final HomeController _controller = HomeController();
 
@@ -40,7 +41,14 @@ Widget buildMenuItems(BuildContext context) {
         ListTile(
           leading: const Icon(Icons.home_filled),
           title: const Text('Home'),
-          onTap: (){},
+          onTap: (){
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
+          },
         ),
         ListTile(
           leading: const Icon(Icons.favorite),
