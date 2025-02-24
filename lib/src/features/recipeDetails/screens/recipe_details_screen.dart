@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipemaster/src/features/home/screens/recipe_book.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 import '../../../features/home/controllers/recipe_book_controller.dart';
+import '../../home/screens/home_screen.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
   final String recipeName;
@@ -123,28 +124,69 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                             width: double.infinity,
                             fit: BoxFit.contain),
                       SizedBox(height: 16),
-                      Text(
-                        "Tags: ${tags?.join(', ') ?? ''}",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                      Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/Paper.png'),
+                            fit: BoxFit.fill
+                          ),
+                          borderRadius: BorderRadius.circular(15)
+                        ),
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Tags: ${tags?.join(', ') ?? ''}",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "Ingredients:",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.bold),
+                            ),
+                            ...?ingredients?.map((ing) =>
+                                Text(
+                                  "${ing['name']}: ${ing['amount']}",
+                                  style: TextStyle(
+                                    
+                                  )
+                                  )
+                                ),
+                            SizedBox(height: 16),
+                            Text(
+                              "Steps:",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.bold),
+                            ),
+                            ...?steps?.map((step) => Text("- $step")),
+
+                            SizedBox(height: 16),
+                            Align(
+                              alignment: Alignment.center,
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(),
+                                  ),
+                                ), 
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
+                                  foregroundColor: WidgetStateProperty.all<Color>(Color(0xFFFFFFFF)),
+                                ),
+                                child: Text("Return to recipe List")
+                              ),
+                            )
+                            
+                          ],
+                        ),
                       ),
-                      Text(
-                        "Ingredients:",
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
-                      ...?ingredients?.map((ing) =>
-                          Text("${ing['name']}: ${ing['amount']}")),
-                      SizedBox(height: 16),
-                      Text(
-                        "Steps:",
-                        style: TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
-                      ),
-                      ...?steps?.map((step) => Text("- $step")),
                     ],
                   ),
                 ),
+                
               ],
             ),
           ),
