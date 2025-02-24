@@ -14,30 +14,66 @@ class RecipeDetailsScreen extends StatefulWidget {
 }
 
 class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
-
   String? recipeId;
+  String? imageUrl;
+  List<TextEditingController>? ingredientNames = [];
+  List<TextEditingController>? ingredientAmounts = [];
+  List<Map<String, dynamic>>? ingredients = [];
+  List<String>? steps = [];
+  List<String>? tags = [];
+  bool isLoading = true;
 
-  Future<void> _getRecipeId() async{
-    User? user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception('Error fetching user');
-      }
+
+  Future<void> _fetchRecipeData() async{
+    try{
+      //Get user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) { throw Exception('Error fetching user'); }
       String userId = user.uid;
+
+      //Get Recipe ID 
       recipeId = await RecipeBookController().getRecipeId(widget.recipeName, userId);
       if (recipeId == null) {
-        _showSnackBar(context, "Error fetching recipe");
+        _showSnackBar("Error fetching recipe");
       }
+      await _getRecipe(userId);
+    } catch (e) { _showSnackBar("Error: ${e.toString()}"); }
   }
 
-  void _showSnackBar(BuildContext context, String message) {
+  Future<void> _getRecipe(String userId) async {
+    try {
+      DocumentSnapshot recipeDoc = await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).get();
+      if (!recipeDoc.exists) {
+        _showSnackBar("Recipe not found");
+        return;
+      }
+
+      Map<String, dynamic> data = recipeDoc.data() as Map<String, dynamic>;
+
+      setState(() {
+        imageUrl = data['imageUrl'];
+        ingredients = List<Map<String, dynamic>>.from(data['ingredients']);
+        steps = List<String>.from(data['steps']);
+        tags = List<String>.from(data['tags']);
+        isLoading = false;
+      });
+    } catch (e) { _showSnackBar("Error fetching recipe"); }
+  }
+
+  void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
   }
 
   @override
+  void initState() {
+    super.initState();
+    _fetchRecipeData();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _getRecipeId();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -63,13 +99,53 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         ],
       ),
       drawer: custom.NavigationDrawer(),
-      body: Stack(
+      body: isLoading
+    ? Center(child: CircularProgressIndicator())
+    : Column( // Use Column to structure the layout properly
         children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset( //Background Image
-              'assets/images/Background.png',
-              fit: BoxFit.cover,
+          Expanded( // Ensures the background covers the full screen
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/Background.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SingleChildScrollView(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (imageUrl != null)
+                        Image.network(imageUrl!,
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.contain),
+                      SizedBox(height: 16),
+                      Text(
+                        "Tags: ${tags?.join(', ') ?? ''}",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "Ingredients:",
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      ...?ingredients?.map((ing) =>
+                          Text("${ing['name']}: ${ing['amount']}")),
+                      SizedBox(height: 16),
+                      Text(
+                        "Steps:",
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                      ...?steps?.map((step) => Text("- $step")),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ],

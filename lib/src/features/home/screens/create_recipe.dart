@@ -49,6 +49,8 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
       return;
     }
 
+    _createIngredientsMap();
+
     try {
       _recipeController.addRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps);
     }
