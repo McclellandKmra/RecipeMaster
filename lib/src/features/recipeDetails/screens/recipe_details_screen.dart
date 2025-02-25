@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recipemaster/src/features/recipeDetails/screens/edit_recipe.dart';
 import 'package:recipemaster/src/features/home/screens/recipe_book.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 import '../../../features/home/controllers/recipe_book_controller.dart';
 import '../../home/screens/home_screen.dart';
+import 'edit_recipe.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
   final String recipeName;
@@ -23,6 +25,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   List<String>? steps = [];
   List<String>? tags = [];
   bool isLoading = true;
+  bool _isEditingRecipe = false;
 
 
   Future<void> _fetchRecipeData() async{
@@ -67,6 +70,14 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     );
   }
 
+  void _onClose() {
+    setState(() {
+      _isEditingRecipe = false;
+    });
+  }
+
+
+
   @override
   void initState() {
     super.initState();
@@ -81,7 +92,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         title: Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: Text(
-            widget.recipeName,
+            "Recipe Details",
             style: TextStyle(
               fontFamily: "JustAnotherHand",
               fontSize: 50,
@@ -136,6 +147,14 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Center(
+                              child: Text(
+                                widget.recipeName,
+                                style : TextStyle(
+                                  fontSize: 40, fontFamily: "JustAnotherHand"
+                                )
+                              ),
+                            ),
                             Text(
                               "Tags: ${tags?.join(', ') ?? ''}",
                               style: TextStyle(
@@ -149,11 +168,8 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                             ...?ingredients?.map((ing) =>
                                 Text(
                                   "${ing['name']}: ${ing['amount']}",
-                                  style: TextStyle(
-                                    
-                                  )
-                                  )
-                                ),
+                                )
+                            ),
                             SizedBox(height: 16),
                             Text(
                               "Steps:",
@@ -163,6 +179,21 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                             ...?steps?.map((step) => Text("- $step")),
 
                             SizedBox(height: 16),
+                            Align(
+                              alignment: Alignment.center,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isEditingRecipe = true;
+                                  });
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 255, 255, 255)),
+                                  foregroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
+                                ),
+                                child: Text("Edit Recipe")
+                              ),
+                            ),
                             Align(
                               alignment: Alignment.center,
                               child: ElevatedButton(
@@ -186,7 +217,15 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     ],
                   ),
                 ),
-                
+                if (_isEditingRecipe) 
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.5), // Semi-transparent background
+                      child: Center(
+                        child: EditRecipeScreen(onClose: _onClose), // Pass onClose function
+                      ),
+                    )
+                  )
               ],
             ),
           ),
