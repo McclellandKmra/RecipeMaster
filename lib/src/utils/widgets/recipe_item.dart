@@ -13,7 +13,7 @@ class RecipeItem extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
         tileColor: Color.fromARGB(255, 216, 204, 170),
-        leading: Image.network(recipe.imageUrl, width: 50, height: 50, fit: BoxFit.cover),
+        leading: SizedBox(width: 50, child: Image.network(recipe.imageUrl, width: 50, height: 50, fit: BoxFit.cover)),
         title: Text(recipe.name),
         subtitle: Text(recipe.tags.join(", ")),
         trailing: Icon(Icons.star_border),

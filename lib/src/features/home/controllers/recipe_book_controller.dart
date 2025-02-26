@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class RecipeBookController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> addRecipe(String name, String imageUrl, List<String> tags, List<Map<String, String>> ingredients, List<TextEditingController> steps) async{
+  Future<void> addRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps) async{
     try {
       //Get current user's ID
       User? user = FirebaseAuth.instance.currentUser;
@@ -33,7 +33,7 @@ class RecipeBookController {
     }
   }
 
-  Future<void> editRecipe(String name, String imageUrl, List<String> tags, List<Map<String, String>> ingredients, List<TextEditingController> steps) async {
+  Future<void> editRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps) async {
     try {
       //Get current user's ID
       User? user = FirebaseAuth.instance.currentUser;

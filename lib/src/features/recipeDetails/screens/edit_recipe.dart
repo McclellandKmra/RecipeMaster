@@ -1,14 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../home/controllers/recipe_book_controller.dart';
+import '../../../utils/widgets/ingredient_input.dart';
+import '../../../utils/widgets/step_input.dart';
+import '../../../constants/tags.dart';
 import 'package:path/path.dart';
 import 'dart:io';
 
 
 class EditRecipeScreen extends StatefulWidget{
   final VoidCallback onClose;
-  const EditRecipeScreen({super.key, required this.onClose});
+  final String recipeName;
+  const EditRecipeScreen({super.key, required this.onClose, required this.recipeName});
 
   @override
   _EditRecipeScreenState createState() => _EditRecipeScreenState();
@@ -21,7 +27,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
 
   List<TextEditingController> ingredientNames = [];
   List<TextEditingController> ingredientAmounts = [];
-  List<Map<String, String>> ingredients = [];
+  List<Map<String, dynamic>> ingredients = [];
   List<TextEditingController> steps = [];
   List<String> tags = [];
   String? _selectedTag;
@@ -30,27 +36,181 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
   XFile? image;
   File? _imageFile;
   String? _imageUrl;
+  String ? _newImageUrl;
 
 
-  _getRecipe() {
-    //Get current user's ID
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception('Error fetching user');
-    }
-    String userID = user.uid;
+  _getRecipe() async{
+    try {
+      //Get current user's ID
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('Error fetching user');
+      }
+      String userId = user.uid;
+      String? recipeId = await _recipeController.getRecipeId(widget.recipeName, userId);
 
-    //String recipeId? = await _recipeController.getRecipeId();
+      DocumentSnapshot recipeDoc = await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).get();
+
+      if (!recipeDoc.exists) {
+        print("error getting recipe document");
+        return;
+      }
+
+      Map<String, dynamic> data = recipeDoc.data() as Map<String, dynamic>;
+      setState(() {
+        _nameController.text = data['name'] ?? '';
+        tags = List<String>.from(data['tags'] ?? []);
+        _imageUrl = data['imageUrl'] ?? '';
+
+        // Populate ingredient controllers
+        ingredientNames = List<TextEditingController>.from(
+          (data['ingredients'] ?? []).map((ing) => TextEditingController(text: ing['name']))
+        );
+        ingredientAmounts = List<TextEditingController>.from(
+          (data['ingredients'] ?? []).map((ing) => TextEditingController(text: ing['amount']))
+        );
+
+        // Populate step controllers
+        steps = List<TextEditingController>.from(
+          (data['steps'] ?? []).map((step) => TextEditingController(text: step))
+        );
+      });
+    } catch(e) { print("Error getting recipe"); }
   }
 
-  
+  _editRecipe(BuildContext context) async{
+    //Combine ingredient name and amount 
+    _createIngredientsMap();
+
+    //Gets new image url, and deletes old one
+    _newImageUrl = await _uploadImage();
+
+    if (_newImageUrl != null) {
+      _deleteImage(_imageUrl);
+      try {
+        _recipeController.editRecipe(_nameController.text.trim(), _newImageUrl!, tags, ingredients, steps);
+      }
+      catch (e) {
+        _showSnackBar(context, "Error updating recipe");
+      }
+    }
+    else {
+      try {
+        _recipeController.editRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps);
+      }
+      catch (e) {
+        _showSnackBar(context, "Error updating recipe");
+      }
+    }  
+  }
+
+  Future<void> _pickImage() async {
+    image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _imageFile = File(image!.path);
+      });
+    }
+  }
+
+  Future<String?> _uploadImage() async {
+    if (_imageFile == null) {
+      return null;
+    }
+    try {
+      String fileName = basename(_imageFile!.path);
+      Reference storageRef = FirebaseStorage.instance.ref().child('recipe_images/$fileName');
+
+      UploadTask uploadTask = storageRef.putFile(_imageFile!);
+      TaskSnapshot snapshot = await uploadTask;
+
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print("image upload failed");
+      return null;
+    }
+  }
+
+  Future<void> _deleteImage(String? imageUrl) async{
+    try {
+      if (imageUrl != null) {
+        Reference storageRef = FirebaseStorage.instance.refFromURL(imageUrl);
+        await storageRef.delete();
+      }
+    } catch (e) { print("Failed to remove old image."); }
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  void _createIngredientsMap() {
+    for (int i = 0; i < ingredientNames.length; i++) {
+      ingredients.add({
+        'name': ingredientNames[i].text.trim(),
+        'amount': ingredientAmounts[i].text.trim()
+      });
+    }
+  }
+
+  void _addIngredient() {
+    setState(() {
+      ingredientNames.add(TextEditingController());
+      ingredientAmounts.add(TextEditingController());
+    });
+  }
+
+  void _removeIngredient(int index) {
+    setState(() {
+      ingredientNames[index].dispose();
+      ingredientAmounts[index].dispose();
+      ingredientNames.removeAt(index);
+      ingredientAmounts.removeAt(index);
+    });
+  }
+
+  void _addStep() {
+    setState(() {
+      steps.add(TextEditingController());
+    });
+  }
+
+  void _removeStep(int index) {
+    setState(() {
+      steps[index].dispose();
+      steps.removeAt(index);
+    });
+  }
+
+  void _addTag(String tag) {
+    if (!tags.contains(tag)) {
+      setState(() {
+        tags.add(tag);
+        _selectedTag = null;
+      });
+    }
+  }
+
+  void _removeTag(String tag) {
+    setState(() {
+      tags.remove(tag);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getRecipe();
+  }
 
   @override
   Widget build(BuildContext context) {
-    _getRecipe();
-
     return Material(
-      /*color: Colors.white,
+      color: Colors.white,
       borderRadius: BorderRadius.circular(10),
       child: Container(
         padding: const EdgeInsets.all(16.0),
@@ -74,7 +234,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                 ]
               ),
               IconButton(
-                onPressed: (){}, 
+                onPressed: _pickImage, 
                 iconSize: 30,
                 icon: Icon(Icons.image_outlined)
               ),
@@ -116,7 +276,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
               DropdownButton<String>( //Tag Selection
                 value: _selectedTag,
                 hint: Text("Select a Tag"),
-                items: (availableTags)
+                items: availableTags
                   .where((tag) => !tags.contains(tag))
                   .map((tag) => DropdownMenuItem(value: tag, child: Text(tag)))
                   .toList(),
@@ -175,18 +335,20 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
                 child: Text("Add Step"),
               ),
               ElevatedButton(
-                onPressed: () => _createRecipe(context), 
+                onPressed: () async {
+                  await _editRecipe(context);
+                  widget.onClose(); // Close the screen
+                }, 
                 style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
                         foregroundColor: WidgetStateProperty.all<Color>(Color(0xFFFFFFFF)),
                 ),
-                child: Text("Create Recipe"),
+                child: Text("Save Recipe"),
               ),
             ],
           ),
         ),
       ),
-      */
     );
   }
 }

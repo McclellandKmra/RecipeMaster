@@ -76,8 +76,6 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     });
   }
 
-
-
   @override
   void initState() {
     super.initState();
@@ -222,7 +220,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     child: Container(
                       color: Colors.black.withValues(alpha: 0.5), // Semi-transparent background
                       child: Center(
-                        child: EditRecipeScreen(onClose: _onClose), // Pass onClose function
+                        child: EditRecipeScreen(onClose: _onClose, recipeName: widget.recipeName), // Pass onClose function
                       ),
                     )
                   )

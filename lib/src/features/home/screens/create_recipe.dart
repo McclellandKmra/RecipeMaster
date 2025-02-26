@@ -31,7 +31,7 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
 
   List<TextEditingController> ingredientNames = [];
   List<TextEditingController> ingredientAmounts = [];
-  List<Map<String, String>> ingredients = [];
+  List<Map<String, dynamic>> ingredients = [];
   List<TextEditingController> steps = [];
   List<String> tags = [];
   String? _selectedTag;
@@ -272,7 +272,10 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
                 child: Text("Add Step"),
               ),
               ElevatedButton(
-                onPressed: () => _createRecipe(context), 
+                onPressed: () async {
+                  await _createRecipe(context);
+                  widget.onClose(); // Close the screen
+                },  
                 style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
                         foregroundColor: WidgetStateProperty.all<Color>(Color(0xFFFFFFFF)),
