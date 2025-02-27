@@ -14,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
 
+  //Run on initialization of the screen
   @override
   void initState() {
     super.initState();
@@ -21,13 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
     passwordController = TextEditingController();
   }
 
+  //Deletes old resources on end
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           // Background Image
           Positioned.fill(
-            child: Image.asset( //Background Image
+            child: Image.asset(
               'assets/images/Background.png',
               fit: BoxFit.cover,
             ),
@@ -46,19 +47,21 @@ class _LoginScreenState extends State<LoginScreen> {
           // Content (Logo and TextFields)
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(16.0), // Adjust padding as needed
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 0),
-                  Image.asset( //Logo Image
+                   //Logo Image
+                  Image.asset(
                     'assets/images/Logo.png',
                     height: 250,
                   ),
 
                   SizedBox(height: 60),
-                  
-                  TextField( //Email Field
+
+                  //Email Field
+                  TextField( 
                     controller: emailController,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.email),
@@ -81,9 +84,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 20), // Add spacing between fields
+                  const SizedBox(height: 20),
 
-                  TextField( //Password Field
+                   //Password Field
+                  TextField(
                     controller: passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
@@ -108,7 +112,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 50),
 
-                  SizedBox( //Login Button
+                  //Login Button
+                  SizedBox(
                     height: 50,
                     width: double.infinity,
                     child: ElevatedButton(
@@ -129,7 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   SizedBox(height: 20),
 
-                  TextButton( //Register Button
+                  //Register Button
+                  TextButton( 
                     onPressed: () => _controller.handleRegisterButton(context),
                     child: const Text.rich(
                       TextSpan(
@@ -140,10 +146,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: " Sign Up!",
                             style: TextStyle(color: Color.fromARGB(255, 4, 226, 255))
                             ),
-                        ]
+                        ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
