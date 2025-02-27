@@ -19,30 +19,6 @@ class _RecipeBookScreenState extends State<RecipeBookScreen> {
   final RecipeBookController _recipeBookController = RecipeBookController();
   bool _isAddingRecipe = false;
 
-
-  //temporary, until actual recipe adding is supported
-  List<String> tags = ["Italian", "Pasta", "Quick"];
-  List<Map<String, String>> ingredients = [
-    {"name": "Spaghetti", "quantity": "1.5 lbs"},
-    {"name": "Whole Eggs", "quantity": "4"},
-    {"name": "Egg Yolk", "quantity": "1"},
-    {"name": "Pecorino Romano Cheese", "quantity": "8 oz"},
-    {"name": "Black Pepper", "quantity": "To Taste"},
-    {"name": "Bacon", "quantity": "0.5 lbs"},
-    {"name": "Salt", "quantity": "To taste"},
-    {"name": "Garlic", "quantity": "3 Cloves"}
-  ];
-  List<String> steps = [
-    "Start boiling the pasta water, salting it heavily."
-    "Mix the eggs and egg yolk into a bowl.", 
-    "Grate the cheese and mix into the bowl with some ground black pepper.",
-    "Add the bacon to a cold pan. Once bacon is almost cooked, add the garlic, taking care to not burn it. Once done turn off the heat but leave on the burner.",
-    "Once the water is boiling add the pasta. Cook until al dente, reserving some pasta water before draining.",
-    "Add the cooked pasta to the bacon and garlic. Add in the egg, cheese, and black pepper mixture. Begin tossing immeadietly.",
-    "Add in the pasta water as needed to emulsify the sauce.",
-    "Serve and Enjoy!"
-    ];
-
   int recipesPerPage = 6;
   int currPage = 0;
 

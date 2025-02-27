@@ -6,8 +6,9 @@ class Recipe{
   final DateTime? createdAt;
   List<Map<String, dynamic>> ingredients;
   List<String> steps;
+  final bool favorite;
 
-  Recipe({required this.name, required this.imageUrl, required this.tags, required this.createdAt, required this.ingredients, required this.steps});
+  Recipe({required this.name, required this.imageUrl, required this.tags, required this.createdAt, required this.ingredients, required this.steps, required this.favorite});
 
   factory Recipe.fromMap(Map<String, dynamic> data) {
     Timestamp? timestamp = data['createdAt'] as Timestamp?;
@@ -23,7 +24,8 @@ class Recipe{
       tags: List<String>.from(data['tags']  ?? []),
       createdAt: createdAtDateTime,
       ingredients: List<Map<String, dynamic>>.from(data['ingredients'] ?? []),
-      steps: List<String>.from(data['steps'])
+      steps: List<String>.from(data['steps']),
+      favorite: data['favorite']
     );
   }
 }

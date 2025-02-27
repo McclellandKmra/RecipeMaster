@@ -16,7 +16,10 @@ class RecipeItem extends StatelessWidget {
         leading: SizedBox(width: 50, child: Image.network(recipe.imageUrl, width: 50, height: 50, fit: BoxFit.cover)),
         title: Text(recipe.name),
         subtitle: Text(recipe.tags.join(", ")),
-        trailing: Icon(Icons.star_border),
+        trailing: Icon(
+          recipe.favorite ? Icons.star : Icons.star_border,
+          color: recipe.favorite ? Colors.yellow : null
+        ),
         onTap: (){
            Navigator.push(
             context,

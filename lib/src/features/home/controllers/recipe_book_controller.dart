@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class RecipeBookController {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> addRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps) async{
+  Future<void> addRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps, bool favorite) async{
     try {
       //Get current user's ID
       User? user = FirebaseAuth.instance.currentUser;
@@ -25,7 +25,8 @@ class RecipeBookController {
         'tags': tags,
         'createdAt': FieldValue.serverTimestamp() ,
         'ingredients': ingredients,
-        'steps': stepTexts
+        'steps': stepTexts,
+        'favorite' : favorite
       });
     } 
     catch(e) {
@@ -33,7 +34,7 @@ class RecipeBookController {
     }
   }
 
-  Future<void> editRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps) async {
+  Future<void> editRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps, bool favorite) async {
     try {
       //Get current user's ID
       User? user = FirebaseAuth.instance.currentUser;
@@ -57,6 +58,7 @@ class RecipeBookController {
         "steps" : stepTexts,
         "imageUrl" : imageUrl,
         "timestamp" : FieldValue.serverTimestamp(),
+        "favorite" : favorite
       });
     } 
     catch(e) {

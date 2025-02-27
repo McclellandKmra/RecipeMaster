@@ -31,6 +31,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
   List<TextEditingController> steps = [];
   List<String> tags = [];
   String? _selectedTag;
+  bool favorite = false;
 
   final ImagePicker picker = ImagePicker();
   XFile? image;
@@ -74,6 +75,8 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
         steps = List<TextEditingController>.from(
           (data['steps'] ?? []).map((step) => TextEditingController(text: step))
         );
+
+        favorite = data['favorite'];
       });
     } catch(e) { print("Error getting recipe"); }
   }
@@ -88,7 +91,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
     if (_newImageUrl != null) {
       _deleteImage(_imageUrl);
       try {
-        _recipeController.editRecipe(_nameController.text.trim(), _newImageUrl!, tags, ingredients, steps);
+        _recipeController.editRecipe(_nameController.text.trim(), _newImageUrl!, tags, ingredients, steps, favorite);
       }
       catch (e) {
         _showSnackBar(context, "Error updating recipe");
@@ -96,7 +99,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
     }
     else {
       try {
-        _recipeController.editRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps);
+        _recipeController.editRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps, favorite);
       }
       catch (e) {
         _showSnackBar(context, "Error updating recipe");

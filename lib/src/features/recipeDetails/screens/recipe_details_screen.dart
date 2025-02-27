@@ -24,6 +24,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   List<Map<String, dynamic>>? ingredients = [];
   List<String>? steps = [];
   List<String>? tags = [];
+  bool favorite = false;
   bool isLoading = true;
   bool _isEditingRecipe = false;
 
@@ -59,9 +60,27 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         ingredients = List<Map<String, dynamic>>.from(data['ingredients']);
         steps = List<String>.from(data['steps']);
         tags = List<String>.from(data['tags']);
+        favorite = data['favorite'];
         isLoading = false;
       });
     } catch (e) { _showSnackBar("Error fetching recipe"); }
+  }
+
+  Future<void> _toggleFavorite() async {
+    try {
+      //Get user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) { throw Exception('Error fetching user'); }
+      String userId = user.uid;
+
+      bool newFavoriteStatus = !favorite;
+
+      await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).update({'favorite': newFavoriteStatus});
+      setState(() {
+        favorite = newFavoriteStatus;
+      });
+    }
+    catch (e) { _showSnackBar("Error updating favorite status"); }
   }
 
   void _showSnackBar(String message) {
@@ -99,6 +118,13 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
         ),
         backgroundColor: Color.fromARGB(255, 78, 143, 163),
         actions: [
+          IconButton(
+            icon: Icon(
+              favorite ? Icons.star : Icons.star_border,
+              color: favorite ? Colors.yellow : null
+            ),
+            onPressed: _toggleFavorite,
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: Image.asset(

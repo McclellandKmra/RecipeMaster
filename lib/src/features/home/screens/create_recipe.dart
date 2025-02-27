@@ -35,6 +35,7 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
   List<TextEditingController> steps = [];
   List<String> tags = [];
   String? _selectedTag;
+  bool favorite = false;
 
   final ImagePicker picker = ImagePicker();
   XFile? image;
@@ -52,7 +53,7 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
     _createIngredientsMap();
 
     try {
-      _recipeController.addRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps);
+      _recipeController.addRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps, favorite);
     }
     catch (e) {
       _showSnackBar(context, "Error uploading recipe");
