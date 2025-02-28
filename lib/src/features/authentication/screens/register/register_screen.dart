@@ -53,7 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           // Content (Logo and TextFields)
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(16.0), // Adjust padding as needed
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -65,7 +65,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   SizedBox(height: 60),
                   
-                  TextField( //Email Field
+                  //Email Field
+                  TextField( 
                     controller: emailController,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.email),
@@ -88,9 +89,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 20), // Add spacing between fields
+                  const SizedBox(height: 20),
 
-                  TextField( //Email Field
+                  //Email Field
+                  TextField( 
                     controller: emailConfirmController,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.email),
