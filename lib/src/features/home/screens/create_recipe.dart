@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
-import '../models/recipe.dart';
-import '../../../utils/widgets/recipe_item.dart';
 import '../controllers/recipe_book_controller.dart';
-import 'recipe_book.dart';
 import '../../../utils/widgets/ingredient_input.dart';
 import '../../../utils/widgets/step_input.dart';
 import '../../../constants/tags.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart';
 import 'dart:io';
-import 'package:permission_handler/permission_handler.dart';
-
 
 class CreateRecipeScreen extends StatefulWidget {
   final VoidCallback onClose;
   const CreateRecipeScreen({super.key, required this.onClose});
 
   @override
-  _CreateRecipeScreenState createState() => _CreateRecipeScreenState();
+  CreateRecipeScreenState createState() => CreateRecipeScreenState();
 }
 
-class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
+class CreateRecipeScreenState extends State<CreateRecipeScreen> {
   final RecipeBookController _recipeController = RecipeBookController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController imageUrlController = TextEditingController();
@@ -46,6 +38,7 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
     _imageUrl = await _uploadImage();
 
     if (_imageUrl == null) {
+      if (!context.mounted) return;
       _showSnackBar(context, "Image upload failed");
       return;
     }
@@ -56,6 +49,7 @@ class _CreateRecipeScreenState extends State<CreateRecipeScreen> {
       _recipeController.addRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps, favorite);
     }
     catch (e) {
+      if (!context.mounted) return;
       _showSnackBar(context, "Error uploading recipe");
     }
   }

@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipemaster/src/features/recipeDetails/screens/edit_recipe.dart';
-import 'package:recipemaster/src/features/home/screens/recipe_book.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 import '../../../features/home/controllers/recipe_book_controller.dart';
 import '../../home/screens/home_screen.dart';
-import 'edit_recipe.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
   final String recipeName;
   const RecipeDetailsScreen({super.key, required this.recipeName});
 
   @override
-  _RecipeDetailsScreenState createState() => _RecipeDetailsScreenState();
+  RecipeDetailsScreenState createState() => RecipeDetailsScreenState();
 }
 
-class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
+class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   String? recipeId;
   String? imageUrl;
   List<TextEditingController>? ingredientNames = [];

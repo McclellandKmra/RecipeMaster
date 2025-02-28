@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/recipe.dart';
 import '../../../utils/widgets/recipe_item.dart';
-import '../controllers/recipe_book_controller.dart';
 import 'create_recipe.dart';
 
 class RecipeBookScreen extends StatefulWidget {
@@ -10,13 +9,13 @@ class RecipeBookScreen extends StatefulWidget {
   const RecipeBookScreen({super.key, required this.recipes});
 
   @override
-  _RecipeBookScreenState createState() => _RecipeBookScreenState();
+  RecipeBookScreenState createState() => RecipeBookScreenState();
 }
 
-class _RecipeBookScreenState extends State<RecipeBookScreen> {
+//Displays all recipes, 6 per page.
+class RecipeBookScreenState extends State<RecipeBookScreen> {
   final PageController  _pageController = PageController();
   final TextEditingController _pageTextController = TextEditingController();
-  final RecipeBookController _recipeBookController = RecipeBookController();
   bool _isAddingRecipe = false;
 
   int recipesPerPage = 6;
@@ -88,11 +87,10 @@ class _RecipeBookScreenState extends State<RecipeBookScreen> {
                     int start = pageIndex * recipesPerPage;
                     int end = (start + recipesPerPage).clamp(0, widget.recipes.length);
                     List<Recipe> pageRecipes = widget.recipes.sublist(start, end);
-
                     return ListView.separated(
                       itemCount: pageRecipes.length,
                       itemBuilder: (context, index) {
-                        return RecipeItem(pageRecipes[index]);
+                        return RecipeItem(recipe: pageRecipes[index]);
                       },
                       separatorBuilder: (context, index) => SizedBox(height: 28),
                     );

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:recipemaster/src/features/recipeDetails/screens/recipe_details_screen.dart';
 import '../../features/home/models/recipe.dart';
-import '../../features/recipeDetails/screens/recipe_details_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+//Class for each item in the recipe book. Displays the name, image, tags, and its favorited status. Can be clicked on for full recipe details
 class RecipeItem extends StatelessWidget {
   final Recipe recipe;
-  const RecipeItem(this.recipe);
+  const RecipeItem({super.key, required this.recipe});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +17,7 @@ class RecipeItem extends StatelessWidget {
         leading: SizedBox(
           width: 50,
           height: 50,
+          //Uses the Cached Network Image package to hopefully reduce image loading times. Uses progress indicator to indicate loading
           child: CachedNetworkImage(
             imageUrl: recipe.imageUrl, 
             width: 50,
@@ -32,6 +33,7 @@ class RecipeItem extends StatelessWidget {
           recipe.favorite ? Icons.star : Icons.star_border,
           color: recipe.favorite ? Colors.yellow : null
         ),
+        //Navigates the user to the recipe details page
         onTap: (){
            Navigator.push(
             context,

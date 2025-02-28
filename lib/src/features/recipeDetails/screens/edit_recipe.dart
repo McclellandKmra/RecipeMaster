@@ -17,10 +17,10 @@ class EditRecipeScreen extends StatefulWidget{
   const EditRecipeScreen({super.key, required this.onClose, required this.recipeName});
 
   @override
-  _EditRecipeScreenState createState() => _EditRecipeScreenState();
+  EditRecipeScreenState createState() => EditRecipeScreenState();
 }
 
-class _EditRecipeScreenState extends State<EditRecipeScreen> {
+class EditRecipeScreenState extends State<EditRecipeScreen> {
   final RecipeBookController _recipeController = RecipeBookController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController imageUrlController = TextEditingController();
@@ -53,7 +53,6 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
       DocumentSnapshot recipeDoc = await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).get();
 
       if (!recipeDoc.exists) {
-        print("error getting recipe document");
         return;
       }
 
@@ -78,7 +77,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
 
         favorite = data['favorite'];
       });
-    } catch(e) { print("Error getting recipe"); }
+    } catch(e) { return; }
   }
 
   _editRecipe(BuildContext context) async{
@@ -94,6 +93,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
         _recipeController.editRecipe(_nameController.text.trim(), _newImageUrl!, tags, ingredients, steps, favorite);
       }
       catch (e) {
+        if (!context.mounted) return;
         _showSnackBar(context, "Error updating recipe");
       }
     }
@@ -102,6 +102,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
         _recipeController.editRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps, favorite);
       }
       catch (e) {
+        if (!context.mounted) return;
         _showSnackBar(context, "Error updating recipe");
       }
     }  
@@ -131,7 +132,6 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
       String downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
-      print("image upload failed");
       return null;
     }
   }
@@ -142,7 +142,7 @@ class _EditRecipeScreenState extends State<EditRecipeScreen> {
         Reference storageRef = FirebaseStorage.instance.refFromURL(imageUrl);
         await storageRef.delete();
       }
-    } catch (e) { print("Failed to remove old image."); }
+    } catch (e) { return; }
   }
 
   void _showSnackBar(BuildContext context, String message) {

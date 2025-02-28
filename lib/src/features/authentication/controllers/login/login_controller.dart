@@ -33,36 +33,43 @@ class LoginController {
     //Catch cases based on various possible errors
     on FirebaseAuthException catch (e) {
       if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
+        if (!context.mounted) return;
         _showSnackBar(context, "Either the email or password is incorrect");
         return;
       }
       else if (e.code == 'invalid-email') {
+        if (!context.mounted) return;
         _showSnackBar(context, "Please provide a valid email address");
         return;
       }
       else if (e.code == "user-disabled") {
+        if (!context.mounted) return;
         _showSnackBar(context, "The provided email is not available");
         return;
       }
       else if (e.code == "too-many-requests") {
+        if (!context.mounted) return;
         _showSnackBar(context, "You have attemped to login too many times too quickly.");
         return;
       }
       else {
+        if (!context.mounted) return;
         _showSnackBar(context, "FirebaseAuthException: ${e.message}");
         return;
       }
     }
     catch (e) {
+      if (!context.mounted) return;
       _showSnackBar(context, "An unexpected error has occured");
       return;
     }
 
+    if (!context.mounted) return;
     //Navigates the user to home on a successful login
     Navigator.pushReplacement(
       context, 
       MaterialPageRoute(builder: (context) => const HomeScreen())
-      );
+    );
     
     return;
   }

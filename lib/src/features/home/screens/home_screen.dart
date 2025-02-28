@@ -10,14 +10,14 @@ class HomeScreen extends StatefulWidget {
    const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   //final HomeController _controller = HomeController();
   List<Recipe> recipes = [];
 
-  Stream<List<Recipe>> _recipeStream() {
+  Stream<List<Recipe>> recipeStream() {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Background Image
           Positioned.fill(
-            child: Image.asset( //Background Image
+            child: Image.asset(
               'assets/images/Background.png',
               fit: BoxFit.cover,
             ),
@@ -88,8 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: StreamBuilder<List<Recipe>>( // Use StreamBuilder here
-                stream: _recipeStream(),
+              child: StreamBuilder<List<Recipe>>(
+                stream: recipeStream(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -98,10 +98,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
+                  
+                   //Get the recipe list from firebase query snapshot
+                  List<Recipe> recipes = snapshot.data ?? [];
 
-                  List<Recipe> recipes = snapshot.data ?? []; // Get the recipe list
-
-                  return RecipeBookScreen(recipes: recipes); // Pass the recipes
+                  //Display the recipes on the home screen notebook page
+                  return RecipeBookScreen(recipes: recipes);
                 },
               ),
             ),

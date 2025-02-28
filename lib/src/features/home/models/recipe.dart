@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+//Class for the recipe item
 class Recipe{
   final String name;
   final String imageUrl;
@@ -10,6 +12,7 @@ class Recipe{
 
   Recipe({required this.name, required this.imageUrl, required this.tags, required this.createdAt, required this.ingredients, required this.steps, required this.favorite});
 
+  //This factory constructor creates a recipe from firestore data. If something is missing, the app does not crash.
   factory Recipe.fromMap(Map<String, dynamic> data) {
     Timestamp? timestamp = data['createdAt'] as Timestamp?;
     DateTime? createdAtDateTime;

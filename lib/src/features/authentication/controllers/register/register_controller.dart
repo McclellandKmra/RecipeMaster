@@ -54,27 +54,33 @@ class RegisterController {
     //Catch cases for various errors
     on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
+        if (!context.mounted) return;
         _showSnackBar(context, "This email has already been registered");
         return;
       }
       else if (e.code == 'invalid-email') {
+        if (!context.mounted) return;
         _showSnackBar(context, "Please provide a valid email address");
         return;
       }
       else if (e.code == "weak-password") {
+        if (!context.mounted) return;
         _showSnackBar(context, "Provided password is too weak");
         return;
       }
       else {
+        if (!context.mounted) return;
         _showSnackBar(context, "FirebaseAuthException: ${e.message}");
         return;
       }
     }
     catch (e) {
+      if (!context.mounted) return;
       _showSnackBar(context, "An unexpected error has occured");
       return;
     }
-    
+
+    if (!context.mounted) return;
     //Navigates the user to the login screen upon successful account creation
     Navigator.pushReplacement(
       context, 
