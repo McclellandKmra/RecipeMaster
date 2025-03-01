@@ -1,19 +1,20 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
-import 'recipe_book.dart';
-import '../models/recipe.dart';
+import '../../home/models/recipe.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'favorites_recipe_book_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-   const HomeScreen({super.key});
+class FavoriteScreen extends StatefulWidget {
+   const FavoriteScreen({super.key});
 
   @override
-  HomeScreenState createState() => HomeScreenState();
+  FavoriteScreenState createState() => FavoriteScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
-  List<Recipe> recipes = [];
+class FavoriteScreenState extends State<FavoriteScreen> {
+
+  List<Recipe> favoriteRecipes = [];
 
   Stream<List<Recipe>> recipeStream() {
     try {
@@ -23,32 +24,21 @@ class HomeScreenState extends State<HomeScreen> {
       }
       String userID = user.uid;
 
+      //Gathers all favorite recipes from firestore
       CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userID).collection('recipes');
       return userRecipesCollection.snapshots().map((snapshot) {
         return snapshot.docs.map((doc) {
           return Recipe.fromMap(doc.data() as Map<String, dynamic>);
-        }).toList();
+        }).where((recipe) => recipe.favorite).toList();
       });
     }
     catch (e) {
       throw Exception('Error fetching recipes');
     }
   }
-  
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext build) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -101,7 +91,7 @@ class HomeScreenState extends State<HomeScreen> {
                   List<Recipe> recipes = snapshot.data ?? [];
 
                   //Display the recipes on the home screen notebook page
-                  return RecipeBookScreen(recipes: recipes);
+                  return FavoriteRecipeBookScreen(recipes: recipes);
                 },
               ),
             ),
