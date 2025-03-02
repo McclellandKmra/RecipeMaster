@@ -219,17 +219,12 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                             Align(
                               alignment: Alignment.center,
                               child: ElevatedButton(
-                                onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomeScreen(),
-                                  ),
-                                ), 
+                                onPressed: () => Navigator.pop(context),
                                 style: ButtonStyle(
                                   backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
                                   foregroundColor: WidgetStateProperty.all<Color>(Color(0xFFFFFFFF)),
                                 ),
-                                child: Text("Return to recipe List")
+                                child: Text("Return to Recipes")
                               ),
                             )
                             

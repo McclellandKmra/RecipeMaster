@@ -45,7 +45,7 @@ class FavoriteScreenState extends State<FavoriteScreen> {
         title: Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: Text(
-            "Home",
+            "Favorite Recipes",
             style: TextStyle(
               fontFamily: "JustAnotherHand",
               fontSize: 50,

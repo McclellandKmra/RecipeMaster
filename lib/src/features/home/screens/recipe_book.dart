@@ -17,7 +17,7 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
   final PageController  _pageController = PageController();
   final TextEditingController _pageTextController = TextEditingController();
   bool _isAddingRecipe = false;
-
+  
   int recipesPerPage = 6;
   int currPage = 0;
 
