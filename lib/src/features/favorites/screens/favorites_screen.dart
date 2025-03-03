@@ -38,7 +38,7 @@ class FavoriteScreenState extends State<FavoriteScreen> {
   }
 
   @override
-  Widget build(BuildContext build) {
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(

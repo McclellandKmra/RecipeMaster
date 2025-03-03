@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipemaster/src/features/recipeDetails/screens/edit_recipe.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 import '../../../features/home/controllers/recipe_book_controller.dart';
-import '../../home/screens/home_screen.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
   final String recipeName;

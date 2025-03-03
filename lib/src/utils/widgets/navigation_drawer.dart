@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:recipemaster/src/features/favorites/screens/favorites_recipe_book_screen.dart';
 import '../../features/home/controllers/home_controller.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/favorites/screens/favorites_screen.dart';

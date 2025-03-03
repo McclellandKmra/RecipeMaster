@@ -27,10 +27,6 @@ class FavoriteRecipeBookScreenState extends State<FavoriteRecipeBookScreen> {
     }
   }
 
-  void _onClose() {
-  
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
