@@ -6,7 +6,7 @@ import '../models/recipe.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
-   const HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -53,12 +53,12 @@ class HomeScreenState extends State<HomeScreen> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Padding(
-          padding: const EdgeInsets.only(top: 10.0),
+          padding: const EdgeInsets.only(top: 5.0),
           child: Text(
-            "Home",
+            "Recipe Book",
             style: TextStyle(
               fontFamily: "JustAnotherHand",
-              fontSize: 50,
+              fontSize: 45,
             ),
           ),
         ),

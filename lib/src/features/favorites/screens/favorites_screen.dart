@@ -43,12 +43,12 @@ class FavoriteScreenState extends State<FavoriteScreen> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Padding(
-          padding: const EdgeInsets.only(top: 10.0),
+          padding: const EdgeInsets.only(top: 5.0),
           child: Text(
             "Favorite Recipes",
             style: TextStyle(
               fontFamily: "JustAnotherHand",
-              fontSize: 50,
+              fontSize: 45,
             ),
           ),
         ),

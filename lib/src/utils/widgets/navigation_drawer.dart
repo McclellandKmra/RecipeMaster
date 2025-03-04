@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../features/home/controllers/home_controller.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/favorites/screens/favorites_screen.dart';
+import '../../features/tags/tag_screen.dart';
 
 final HomeController _controller = HomeController();
 
@@ -41,7 +42,7 @@ Widget buildMenuItems(BuildContext context) {
       children: [
         ListTile(
           leading: const Icon(Icons.home_filled),
-          title: const Text('Home'),
+          title: const Text('Home (Recipe Book)'),
           onTap: (){
             Navigator.push(
             context,
@@ -53,7 +54,7 @@ Widget buildMenuItems(BuildContext context) {
         ),
         ListTile(
           leading: const Icon(Icons.favorite),
-          title: const Text('Favorites'),
+          title: const Text('Favorite Recipes'),
           onTap: (){
             Navigator.push(
             context,
@@ -66,7 +67,14 @@ Widget buildMenuItems(BuildContext context) {
         ListTile(
           leading: const Icon(Icons.tag),
           title: const Text('Edit Recipe Tags'),
-          onTap: (){},
+          onTap: (){
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TagScreen(),
+            ),
+            );
+          },
         ),
         ListTile(
           leading: const Icon(Icons.person_2_outlined),
