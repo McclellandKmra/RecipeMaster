@@ -37,13 +37,38 @@ class TagScreenState extends State<TagScreen> {
         ],
       ),
       drawer: custom.NavigationDrawer(),
-      body: Stack(
+      body: Column(
         children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/Background.png',
-              fit: BoxFit.cover,
+          Expanded(
+            child: Stack(
+              children: [
+              // Background Image
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/Background.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SingleChildScrollView(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/Paper.png'),
+                            fit: BoxFit.fill
+                          ),
+                          borderRadius: BorderRadius.circular(15)
+                        ),
+                        padding: EdgeInsets.all(16),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ],

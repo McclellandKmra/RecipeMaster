@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../screens/login/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../constants/tags.dart';
 
 class RegisterController {
   final TextEditingController emailController = TextEditingController();
@@ -50,6 +52,12 @@ class RegisterController {
     try{
       final auth = FirebaseAuth.instance;
       await auth.createUserWithEmailAndPassword(email: email, password: password);
+
+      User? user = auth.currentUser;
+      if (user != null) {
+        if (!context.mounted) return;
+        saveTags(user, context);
+      }
     }
     //Catch cases for various errors
     on FirebaseAuthException catch (e) {
@@ -80,6 +88,8 @@ class RegisterController {
       return;
     }
 
+
+
     if (!context.mounted) return;
     //Navigates the user to the login screen upon successful account creation
     Navigator.pushReplacement(
@@ -88,6 +98,17 @@ class RegisterController {
       );
     
     return;
+  }
+
+  Future<void> saveTags(User user, BuildContext context) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({'tags': availableTags});
+    }
+    catch (e) {
+      if (!context.mounted) return;
+      _showSnackBar(context, "Unable to create tags");
+      return;
+    }
   }
 
   //Navigates the user back to the login screen on button press
