@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/widgets/navigation_drawer.dart' as custom;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TagScreen extends StatefulWidget {
   const TagScreen({super.key});
@@ -9,7 +11,34 @@ class TagScreen extends StatefulWidget {
 }
 
 class TagScreenState extends State<TagScreen> {
-  
+  List<String> tags = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTags();
+  }
+
+  Future<void> fetchTags() async{
+    try {
+      List<String> userTags = [];
+      //Get user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) { throw Exception('Error fetching user'); }
+      String userId = user.uid;
+
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection("users").doc(userId).get();
+      if (snapshot.exists) {
+        userTags = snapshot.get("tags");
+      }
+
+      setState(() {
+        tags = userTags;
+      });
+    }
+    catch (e) { return; }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
