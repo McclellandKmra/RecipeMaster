@@ -24,19 +24,38 @@ class TagScreenState extends State<TagScreen> {
       List<String> userTags = [];
       //Get user
       User? user = FirebaseAuth.instance.currentUser;
-      if (user == null) { throw Exception('Error fetching user'); }
+      if (user == null) { 
+        throw Exception('Error fetching user'); 
+      }
       String userId = user.uid;
 
       DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection("users").doc(userId).get();
-      if (snapshot.exists) {
-        userTags = snapshot.get("tags");
+      if (snapshot.exists) {   
+        var data = snapshot.data() as Map<String, dynamic>; // Ensure it's a Map
+        print(data);
+        if (data.containsKey("Tags") && data["Tags"] is List) {
+          userTags = List<String>.from(data["Tags"]); // Ensure correct type
+        } else {
+          userTags = []; // Default to empty list if missing
+        }
       }
 
       setState(() {
         tags = userTags;
       });
+
+      if (tags.isEmpty) {
+        print("empty");
+      }
+
+      for (int i = 0; i < tags.length; i++) {
+        print(tags[i]);
+      }
     }
-    catch (e) { return; }
+    catch (e) { 
+      print("error");
+      return; 
+    }
   }
 
   @override
@@ -93,6 +112,19 @@ class TagScreenState extends State<TagScreen> {
                           borderRadius: BorderRadius.circular(15)
                         ),
                         padding: EdgeInsets.all(16),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: tags.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5.0),
+                              child: Text(
+                                tags[index],
+                                style: TextStyle(fontSize: 15)
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),
