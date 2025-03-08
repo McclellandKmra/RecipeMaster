@@ -19,20 +19,24 @@ class TagScreenState extends State<TagScreen> {
     fetchTags();
   }
 
-  Future<void> fetchTags() async{
-    try {
-      List<String> userTags = [];
-      //Get user
+  Future<String> getUserId() async {
+    //Get user
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) { 
         throw Exception('Error fetching user'); 
       }
       String userId = user.uid;
+      return userId;
+  }
+
+  Future<void> fetchTags() async{
+    try {
+      List<String> userTags = [];
+      String userId = await getUserId();
 
       DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection("users").doc(userId).get();
       if (snapshot.exists) {   
         var data = snapshot.data() as Map<String, dynamic>; // Ensure it's a Map
-        print(data);
         if (data.containsKey("Tags") && data["Tags"] is List) {
           userTags = List<String>.from(data["Tags"]); // Ensure correct type
         } else {
@@ -44,18 +48,24 @@ class TagScreenState extends State<TagScreen> {
         tags = userTags;
       });
 
-      if (tags.isEmpty) {
-        print("empty");
-      }
-
-      for (int i = 0; i < tags.length; i++) {
-        print(tags[i]);
-      }
     }
     catch (e) { 
-      print("error");
       return; 
     }
+  }
+
+  Future<void> createTag(BuildContext context, String tag) async{
+    //Get user
+    String userId = await getUserId();
+    final userTags = await FirebaseFirestore.instance.collection("users").doc(userId);
+    try {
+      await userTags.update({'Tags': tag});
+    }
+    catch (e) { return; } 
+  }
+
+  Future<void> deleteTag(BuildContext context, String tag) async{
+    return;
   }
 
   @override
@@ -103,28 +113,41 @@ class TagScreenState extends State<TagScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 16),
-                      Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/Paper.png'),
-                            fit: BoxFit.fill
-                          ),
-                          borderRadius: BorderRadius.circular(15)
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: tags.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                              child: Text(
-                                tags[index],
-                                style: TextStyle(fontSize: 15)
+                      Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/images/Paper.png'),
+                                fit: BoxFit.fill
                               ),
-                            );
-                          },
-                        ),
+                              borderRadius: BorderRadius.circular(15)
+                            ),
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                Center( 
+                                  child: IconButton(
+                                    icon: Icon(Icons.add_box_rounded, size: 30),
+                                    onPressed: () {},
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Wrap(
+                                  spacing: 8.0,
+                                  children: tags.map((tag) => Chip(
+                                    label: Text(tag),
+                                    backgroundColor: Colors.green[200],
+                                    deleteIcon: Icon(Icons.close),
+                                    onDeleted: () {
+                                      deleteTag(context, tag);
+                                    },
+                                  )).toList(),
+                                ),
+                              ],
+                            ),  
+                          ),
+                        ],
                       ),
                     ],
                   ),
