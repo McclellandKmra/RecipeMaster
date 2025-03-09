@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../controllers/recipe_book_controller.dart';
 import '../../../utils/widgets/ingredient_input.dart';
 import '../../../utils/widgets/step_input.dart';
-import '../../../constants/tags.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
@@ -26,6 +25,7 @@ class CreateRecipeScreenState extends State<CreateRecipeScreen> {
   List<Map<String, dynamic>> ingredients = [];
   List<TextEditingController> steps = [];
   List<String> tags = [];
+  List<String> availableTags = [];
   String? _selectedTag;
   bool favorite = false;
 
@@ -33,6 +33,19 @@ class CreateRecipeScreenState extends State<CreateRecipeScreen> {
   XFile? image;
   File? _imageFile;
   String? _imageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAvailableTags();
+  }
+
+  Future<void> fetchAvailableTags() async {
+    List<String> fetchedTags = await _recipeController.fetchTags();
+    setState(() {
+      availableTags = fetchedTags;
+    });
+  }
 
   Future<void> _createRecipe(BuildContext context) async {
     _imageUrl = await _uploadImage();

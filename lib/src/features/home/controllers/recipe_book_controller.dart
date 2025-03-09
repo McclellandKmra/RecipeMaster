@@ -36,12 +36,7 @@ class RecipeBookController {
 
   Future<void> editRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps, bool favorite) async {
     try {
-      //Get current user's ID
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception('Error fetching user');
-      }
-      String userId = user.uid;
+      String userId = await getUserId();
 
       String? recipeId = await getRecipeId(name, userId);
 
@@ -83,6 +78,38 @@ class RecipeBookController {
     }
     catch (e) {
       return null;
+    }
+  }
+
+  Future<String> getUserId() async {
+    //Get user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) { 
+        throw Exception('Error fetching user'); 
+      }
+      String userId = user.uid;
+      return userId;
+  }
+
+  Future<List<String>> fetchTags() async{
+    List<String> userTags = [];
+    try {
+      String userId = await getUserId();
+
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection("users").doc(userId).get();
+      if (snapshot.exists) {   
+        var data = snapshot.data() as Map<String, dynamic>; // Ensure it's a Map
+        if (data.containsKey("Tags") && data["Tags"] is List) {
+          userTags = List<String>.from(data["Tags"]); // Ensure correct type
+        } else {
+          userTags = []; // Default to empty list if missing
+        }
+      }
+
+      return userTags;
+    }
+    catch (e) { 
+      return userTags; 
     }
   }
 }

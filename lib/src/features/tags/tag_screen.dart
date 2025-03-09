@@ -12,6 +12,8 @@ class TagScreen extends StatefulWidget {
 
 class TagScreenState extends State<TagScreen> {
   List<String> tags = [];
+  bool isCreatingTag = false;
+  final TextEditingController _tagController = TextEditingController();
 
   @override
   void initState() {
@@ -55,17 +57,35 @@ class TagScreenState extends State<TagScreen> {
   }
 
   Future<void> createTag(BuildContext context, String tag) async{
-    //Get user
+    //Get user id
     String userId = await getUserId();
-    final userTags = await FirebaseFirestore.instance.collection("users").doc(userId);
+
+    //Firebase query
+    final userTags = FirebaseFirestore.instance.collection("users").doc(userId);
     try {
-      await userTags.update({'Tags': tag});
+      await userTags.update({'Tags': FieldValue.arrayUnion([tag])});
+      setState(() {
+        tags.add(tag);
+        isCreatingTag = false;
+        _tagController.clear();
+      });
     }
     catch (e) { return; } 
   }
 
   Future<void> deleteTag(BuildContext context, String tag) async{
-    return;
+    //Get user id
+    String userId = await getUserId();
+
+    //Firebase query
+    final userTags = FirebaseFirestore.instance.collection("users").doc(userId);
+    try {
+      await userTags.update({'Tags': FieldValue.arrayRemove([tag])});
+      setState(() {
+        tags.remove(tag);
+      });
+    }
+    catch (e) { return; } 
   }
 
   @override
@@ -129,9 +149,27 @@ class TagScreenState extends State<TagScreen> {
                                 Center( 
                                   child: IconButton(
                                     icon: Icon(Icons.add_box_rounded, size: 30),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      setState(() {
+                                        isCreatingTag = true;
+                                      });
+                                    },
                                   ),
                                 ),
+                                if (isCreatingTag) ...[
+                                  SizedBox(height: 20),
+                                  TextField (
+                                    controller: _tagController,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    onSubmitted: (tag) {
+                                      if (tag.isNotEmpty) {
+                                        createTag(context, tag);
+                                      }
+                                    },
+                                  ),
+                                ],
                                 SizedBox(height: 20),
                                 Wrap(
                                   spacing: 8.0,
