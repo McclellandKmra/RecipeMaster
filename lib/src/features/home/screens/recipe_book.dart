@@ -16,12 +16,21 @@ class RecipeBookScreen extends StatefulWidget {
 class RecipeBookScreenState extends State<RecipeBookScreen> {
   final PageController  _pageController = PageController();
   final TextEditingController _pageTextController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   bool _isAddingRecipe = false;
   
   int recipesPerPage = 6;
   int currPage = 0;
 
-  int get totalPages => (widget.recipes.length / recipesPerPage).ceil();
+  List<Recipe> filteredRecipes = [];
+
+  int get totalPages => (filteredRecipes.length / recipesPerPage).ceil();
+
+  @override
+  void initState() {
+    super.initState();
+    filteredRecipes = List.from(widget.recipes);
+  }
 
   void _jumpToPage(int page) {
     if (page >= 0 && page < totalPages) {
@@ -33,6 +42,20 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
   void _onClose() {
     setState(() {
       _isAddingRecipe = false;
+    });
+  }
+
+  void filterRecipes(String query) {
+    setState(() {
+      if (query.isEmpty) {filteredRecipes = List.from(widget.recipes);}
+      else {
+        query = query.toLowerCase();
+        filteredRecipes = widget.recipes.where((recipe) {
+          return recipe.name.toLowerCase().contains(query) ||
+                 recipe.tags.any((tag) => tag.toLowerCase().contains(query)) ||
+                 recipe.ingredients.any((ingredient) => ingredient["name"].toLowerCase().contains(query));
+        }).toList();
+      }
     });
   }
 
@@ -61,12 +84,26 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
                         fontSize: 30,
                       ),
                     ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            labelText: "Search Recipes",
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(vertical: 2),
+                          ),
+                          onChanged: filterRecipes,
+                        )
+                      ),
+                    ),
                     Padding (
                       padding: const EdgeInsets.only(right: 5.0),
                       child: IconButton(
                         icon: Icon(Icons.add_box_rounded),
                         iconSize: 30,
-                        
                         onPressed: () {
                           setState(() {
                             _isAddingRecipe = true;
@@ -77,6 +114,10 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
                   ],
                 ),
               ),
+              
+
+              
+
               SizedBox(height: 13),
               Expanded(
                 child: PageView.builder(
@@ -85,14 +126,14 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
                   onPageChanged: (index) => setState(() => currPage = index),
                   itemBuilder: (context, pageIndex) {
                     int start = pageIndex * recipesPerPage;
-                    int end = (start + recipesPerPage).clamp(0, widget.recipes.length);
-                    List<Recipe> pageRecipes = widget.recipes.sublist(start, end);
+                    int end = (start + recipesPerPage).clamp(0, filteredRecipes.length);
+                    List<Recipe> pageRecipes = filteredRecipes.sublist(start, end);
                     return ListView.separated(
                       itemCount: pageRecipes.length,
                       itemBuilder: (context, index) {
                         return RecipeItem(recipe: pageRecipes[index]);
                       },
-                      separatorBuilder: (context, index) => SizedBox(height: 28),
+                      separatorBuilder: (context, index) => SizedBox(height: 23),
                     );
                   }
                 ),

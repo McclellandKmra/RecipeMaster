@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   List<Recipe> recipes = [];
+  List<Recipe> filteredRecipes = [];
 
   Stream<List<Recipe>> recipeStream() {
     try {
@@ -34,7 +35,6 @@ class HomeScreenState extends State<HomeScreen> {
       throw Exception('Error fetching recipes');
     }
   }
-  
 
   @override
   void initState() {
@@ -97,11 +97,14 @@ class HomeScreenState extends State<HomeScreen> {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   }
                   
-                   //Get the recipe list from firebase query snapshot
+                  //Get the recipe list from firebase query snapshot
                   List<Recipe> recipes = snapshot.data ?? [];
 
+                  //Set initial filtered recipes list, including all recipes
+                  if (filteredRecipes.isEmpty) {filteredRecipes = List.from(recipes);}
+                  
                   //Display the recipes on the home screen notebook page
-                  return RecipeBookScreen(recipes: recipes);
+                  return RecipeBookScreen(recipes: filteredRecipes);
                 },
               ),
             ),
