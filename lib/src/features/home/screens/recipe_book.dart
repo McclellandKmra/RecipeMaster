@@ -93,7 +93,7 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
                             labelText: "Search Recipes",
                             prefixIcon: Icon(Icons.search),
                             border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(vertical: 2),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 2),
                           ),
                           onChanged: filterRecipes,
                         )
