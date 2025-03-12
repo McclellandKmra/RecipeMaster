@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:recipemaster/src/features/recipeDetails/screens/edit_recipe.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 import '../../../features/home/controllers/recipe_book_controller.dart';
@@ -29,9 +30,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   Future<void> _fetchRecipeData() async{
     try{
       //Get user
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user == null) { throw Exception('Error fetching user'); }
-      String userId = user.uid;
+      String userId = await getUserId();
 
       //Get Recipe ID 
       recipeId = await RecipeBookController().getRecipeId(widget.recipeName, userId);
@@ -66,9 +65,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   Future<void> _toggleFavorite() async {
     try {
       //Get user
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user == null) { throw Exception('Error fetching user'); }
-      String userId = user.uid;
+      String userId = await getUserId();
 
       bool newFavoriteStatus = !favorite;
 
@@ -78,6 +75,30 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       });
     }
     catch (e) { _showSnackBar("Error updating favorite status"); }
+  }
+
+  Future<void> deleteRecipe(BuildContext context) async{
+    try {
+      String userId = await getUserId();
+      if (imageUrl != null) {
+        await FirebaseStorage.instance.refFromURL(imageUrl!).delete();
+      }
+      await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).delete();
+      if (context.mounted) Navigator.pop(context, 'OK');
+    }
+    catch (e) {
+      _showSnackBar("Recipe Deletion Failed");
+    }
+  }
+
+  Future<String> getUserId() async {
+    //Get user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) { 
+        throw Exception('Error fetching user'); 
+      }
+      String userId = user.uid;
+      return userId;
   }
 
   void _showSnackBar(String message) {
@@ -213,6 +234,40 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                                   foregroundColor: WidgetStateProperty.all<Color>(Color(0xFF157145)),
                                 ),
                                 child: Text("Edit Recipe")
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.center,
+                              child: ElevatedButton(
+                                onPressed: 
+                                    () => showDialog<String>(
+                                      context: context,
+                                      builder:
+                                          (BuildContext context) => AlertDialog(
+                                            actionsOverflowAlignment: OverflowBarAlignment.center,
+                                            title: Text('Delete \n${widget.recipeName}?'),
+                                            content: const Text('This action cannot be undone.'),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context, 'OK');
+                                                  deleteRecipe(context);
+                                                  Navigator.pop(context, 'OK');
+                                                },
+                                                child: const Text('Delete'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context, 'Cancel'),
+                                                child: const Text('Cancel'),
+                                              ),
+                                            ],
+                                          ),
+                                ),
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 202, 52, 52)),
+                                  foregroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 255, 255, 255)),
+                                ),
+                                child: Text("Delete Recipe")
                               ),
                             ),
                             Align(
