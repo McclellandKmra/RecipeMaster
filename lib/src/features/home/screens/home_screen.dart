@@ -101,7 +101,7 @@ class HomeScreenState extends State<HomeScreen> {
                   List<Recipe> recipes = snapshot.data ?? [];
 
                   //Set initial filtered recipes list, including all recipes
-                  if (filteredRecipes.isEmpty) {filteredRecipes = List.from(recipes);}
+                  filteredRecipes = List.from(recipes);
                   
                   //Display the recipes on the home screen notebook page
                   return RecipeBookScreen(recipes: filteredRecipes);

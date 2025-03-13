@@ -32,6 +32,16 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
     filteredRecipes = List.from(widget.recipes);
   }
 
+  @override
+  void didUpdateWidget(covariant RecipeBookScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.recipes != oldWidget.recipes) {
+      setState(() {
+        filteredRecipes = List.from(widget.recipes);
+      });
+    }
+  }
+
   void _jumpToPage(int page) {
     if (page >= 0 && page < totalPages) {
       _pageController.jumpToPage(page);
