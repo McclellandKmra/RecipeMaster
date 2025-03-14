@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/widgets/navigation_drawer.dart' as custom;
+import '../home/controllers/home_controller.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -9,6 +10,13 @@ class AccountScreen extends StatefulWidget {
 }
 
 class AccountScreenState extends State<AccountScreen> {
+  final HomeController homeController = HomeController();
+
+  Future<void> deleteAccount(BuildContext context) async {
+    homeController.handleSignout(context);
+
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +45,9 @@ class AccountScreenState extends State<AccountScreen> {
         ],
       ),
       drawer: custom.NavigationDrawer(),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded( // Ensures the background covers the full screen
+          Positioned.fill(
             child: Stack(
               children: [
                 Positioned.fill(
@@ -50,6 +58,39 @@ class AccountScreenState extends State<AccountScreen> {
                 ),
               ],
             )
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              onPressed: 
+                  () => showDialog<String>(
+                    context: context,
+                    builder:
+                        (BuildContext context) => AlertDialog(
+                          actionsOverflowAlignment: OverflowBarAlignment.center,
+                          title: Text('Delete Account?'),
+                          content: const Text('This action cannot be undone.'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context, 'OK');
+                                deleteAccount(context);
+                              },
+                              child: const Text('Delete'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Cancel'),
+                            ),
+                          ],
+                        ),
+              ),
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 202, 52, 52)),
+                foregroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 255, 255, 255)),
+              ),
+              child: Text("Delete Account")
+            ),
           ),
         ],
       ),
