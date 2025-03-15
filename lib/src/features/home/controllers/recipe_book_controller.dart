@@ -95,9 +95,9 @@ class RecipeBookController {
     List<String> userTags = [];
     try {
       String userId = await getUserId();
-
       DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection("users").doc(userId).get();
       if (snapshot.exists) {   
+        print("exists");
         var data = snapshot.data() as Map<String, dynamic>; // Ensure it's a Map
         if (data.containsKey("Tags") && data["Tags"] is List) {
           userTags = List<String>.from(data["Tags"]); // Ensure correct type
@@ -106,6 +106,7 @@ class RecipeBookController {
         }
       }
 
+      print("number of tags: ${userTags.length}");
       return userTags;
     }
     catch (e) { 

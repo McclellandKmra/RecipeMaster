@@ -4,6 +4,7 @@ import '../../../utils/widgets/ingredient_input.dart';
 import '../../../utils/widgets/step_input.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart';
 import 'dart:io';
 
@@ -67,10 +68,21 @@ class CreateRecipeScreenState extends State<CreateRecipeScreen> {
     }
   }
 
+  Future<String> getUserId() async {
+    //Get user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) { 
+        throw Exception('Error fetching user'); 
+      }
+      String userId = user.uid;
+      return userId;
+  }
+
   Future<String?> _uploadImage() async {
     if (_imageFile == null) return null;
+    String userId = await getUserId();
     try {
-      String fileName = basename(_imageFile!.path);
+      String fileName = userId + basename(_imageFile!.path);
       Reference storageRef = FirebaseStorage.instance.ref().child('recipe_images/$fileName');
 
       UploadTask uploadTask = storageRef.putFile(_imageFile!);

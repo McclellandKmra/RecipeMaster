@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../utils/widgets/navigation_drawer.dart' as custom;
 import '../home/controllers/home_controller.dart';
+import '../home/models/recipe.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -11,11 +16,45 @@ class AccountScreen extends StatefulWidget {
 
 class AccountScreenState extends State<AccountScreen> {
   final HomeController homeController = HomeController();
+  Stream<List<Recipe>> recipes = Stream.empty();
 
   Future<void> deleteAccount(BuildContext context) async {
-    homeController.handleSignout(context);
-
     
+
+    homeController.handleSignout(context);
+  }
+
+  Future<void> getRecipes(BuildContext context) async {
+    String userId = await getUserId();
+
+    CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userId).collection('recipes');
+    recipes = userRecipesCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+          return Recipe.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+    });
+
+    recipes.listen((recipeList) {
+      for (int i = 0; i < recipeList.length; i++) {
+        print(recipeList[i].name);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getRecipes(context);
+  }
+  
+  Future<String> getUserId() async {
+    //Get user
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) { 
+        throw Exception('Error fetching user'); 
+      }
+      String userId = user.uid;
+      return userId;
   }
 
   @override
