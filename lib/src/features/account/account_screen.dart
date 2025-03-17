@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../utils/widgets/navigation_drawer.dart' as custom;
 import '../home/controllers/home_controller.dart';
 import '../home/models/recipe.dart';
+import '../home/controllers/recipe_book_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,9 +20,14 @@ class AccountScreenState extends State<AccountScreen> {
   Stream<List<Recipe>> recipes = Stream.empty();
 
   Future<void> deleteAccount(BuildContext context) async {
-    
+    getRecipes(context);
+    recipes.listen((recipeList) {
+      for (int i = 0; i < recipeList.length; i++) {
+        
+      }
+    });
 
-    homeController.handleSignout(context);
+    //homeController.handleSignout(context);
   }
 
   Future<void> getRecipes(BuildContext context) async {
@@ -32,12 +38,6 @@ class AccountScreenState extends State<AccountScreen> {
       return snapshot.docs.map((doc) {
           return Recipe.fromMap(doc.data() as Map<String, dynamic>);
       }).toList();
-    });
-
-    recipes.listen((recipeList) {
-      for (int i = 0; i < recipeList.length; i++) {
-        print(recipeList[i].name);
-      }
     });
   }
 
@@ -112,7 +112,7 @@ class AccountScreenState extends State<AccountScreen> {
                           actions: <Widget>[
                             TextButton(
                               onPressed: () {
-                                Navigator.pop(context, 'OK');
+                                //Navigator.pop(context, 'OK');
                                 deleteAccount(context);
                               },
                               child: const Text('Delete'),
