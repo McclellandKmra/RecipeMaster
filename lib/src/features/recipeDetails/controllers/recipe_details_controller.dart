@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class RecipeDetailsController {
-  Future<void> deleteRecipe(BuildContext context, String? recipeId, String userId, String? imageUrl) async{
+  Future<void> deleteRecipe(BuildContext context,  String userId, String? recipeId, String? imageUrl) async{
     try {
       if (imageUrl != null) {
         await FirebaseStorage.instance.refFromURL(imageUrl).delete();

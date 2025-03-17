@@ -24,12 +24,14 @@ class AccountScreenState extends State<AccountScreen> {
   String userId = "";
 
   Future<void> deleteAccount(BuildContext context) async {
+    //Delete the recipes that belong to the account
     String? recipeId = "";
     getRecipes(context);
     recipes.listen((recipeList) async {
       for (int i = 0; i < recipeList.length; i++) {
         recipeId = await recipeBookController.getRecipeId(recipeList[i].name, userId);
-        print("recipe id: $recipeId");
+        if (!context.mounted) return;
+        recipeDetailsController.deleteRecipe(context, userId, recipeId, recipeList[i].imageUrl);
       }
     });
 

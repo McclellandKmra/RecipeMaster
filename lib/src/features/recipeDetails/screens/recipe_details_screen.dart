@@ -238,7 +238,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                                               TextButton(
                                                 onPressed: () {
                                                   Navigator.pop(context, 'OK');
-                                                  recipeDetailsController.deleteRecipe(context, recipeId, userId, imageUrl);
+                                                  recipeDetailsController.deleteRecipe(context, userId, recipeId, imageUrl);
                                                   Navigator.pop(context, 'OK');
                                                 },
                                                 child: const Text('Delete'),
