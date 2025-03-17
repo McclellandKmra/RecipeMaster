@@ -3,6 +3,7 @@ import '../../utils/widgets/navigation_drawer.dart' as custom;
 import '../home/controllers/home_controller.dart';
 import '../home/models/recipe.dart';
 import '../home/controllers/recipe_book_controller.dart';
+import '../recipeDetails/controllers/recipe_details_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,13 +18,18 @@ class AccountScreen extends StatefulWidget {
 
 class AccountScreenState extends State<AccountScreen> {
   final HomeController homeController = HomeController();
+  final RecipeBookController recipeBookController = RecipeBookController();
+  final RecipeDetailsController recipeDetailsController = RecipeDetailsController();
   Stream<List<Recipe>> recipes = Stream.empty();
+  String userId = "";
 
   Future<void> deleteAccount(BuildContext context) async {
+    String? recipeId = "";
     getRecipes(context);
-    recipes.listen((recipeList) {
+    recipes.listen((recipeList) async {
       for (int i = 0; i < recipeList.length; i++) {
-        
+        recipeId = await recipeBookController.getRecipeId(recipeList[i].name, userId);
+        print("recipe id: $recipeId");
       }
     });
 
@@ -31,8 +37,6 @@ class AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> getRecipes(BuildContext context) async {
-    String userId = await getUserId();
-
     CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userId).collection('recipes');
     recipes = userRecipesCollection.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -44,17 +48,21 @@ class AccountScreenState extends State<AccountScreen> {
   @override
   void initState() {
     super.initState();
+    _init();
     getRecipes(context);
   }
+
+  Future<void> _init() async {
+    await getUserId();
+  }
   
-  Future<String> getUserId() async {
+  Future<void> getUserId() async {
     //Get user
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) { 
         throw Exception('Error fetching user'); 
       }
-      String userId = user.uid;
-      return userId;
+      userId = user.uid;
   }
 
   @override

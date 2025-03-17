@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:recipemaster/src/features/recipeDetails/screens/edit_recipe.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 import '../../../features/home/controllers/recipe_book_controller.dart';
+import '../controllers/recipe_details_controller.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
   final String recipeName;
@@ -15,6 +16,7 @@ class RecipeDetailsScreen extends StatefulWidget {
 }
 
 class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
+  final RecipeDetailsController recipeDetailsController = RecipeDetailsController();
   String? recipeId;
   String? imageUrl;
   List<TextEditingController>? ingredientNames = [];
@@ -26,22 +28,21 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   bool isLoading = true;
   bool _isEditingRecipe = false;
 
+  String userId = "";
+
 
   Future<void> _fetchRecipeData() async{
     try{
-      //Get user
-      String userId = await getUserId();
-
       //Get Recipe ID 
       recipeId = await RecipeBookController().getRecipeId(widget.recipeName, userId);
       if (recipeId == null) {
         _showSnackBar("Error fetching recipe");
       }
-      await _getRecipe(userId);
+      await _getRecipe();
     } catch (e) { _showSnackBar("Error: ${e.toString()}"); }
   }
 
-  Future<void> _getRecipe(String userId) async {
+  Future<void> _getRecipe() async {
     try {
       DocumentSnapshot recipeDoc = await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).get();
       if (!recipeDoc.exists) {
@@ -64,11 +65,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
 
   Future<void> _toggleFavorite() async {
     try {
-      //Get user
-      String userId = await getUserId();
-
       bool newFavoriteStatus = !favorite;
-
       await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).update({'favorite': newFavoriteStatus});
       setState(() {
         favorite = newFavoriteStatus;
@@ -77,28 +74,13 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     catch (e) { _showSnackBar("Error updating favorite status"); }
   }
 
-  Future<void> deleteRecipe(BuildContext context) async{
-    try {
-      String userId = await getUserId();
-      if (imageUrl != null) {
-        await FirebaseStorage.instance.refFromURL(imageUrl!).delete();
-      }
-      await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).delete();
-      if (context.mounted) Navigator.pop(context, 'OK');
-    }
-    catch (e) {
-      _showSnackBar("Recipe Deletion Failed");
-    }
-  }
-
-  Future<String> getUserId() async {
+  Future<void> getUserId() async {
     //Get user
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) { 
         throw Exception('Error fetching user'); 
       }
-      String userId = user.uid;
-      return userId;
+      userId = user.uid;
   }
 
   void _showSnackBar(String message) {
@@ -113,10 +95,15 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     });
   }
 
+  Future<void> _init() async {
+    await getUserId();
+    await _fetchRecipeData();
+  }
+
   @override
   void initState() {
     super.initState();
-    _fetchRecipeData();
+    _init();
   }
 
   @override
@@ -251,7 +238,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                                               TextButton(
                                                 onPressed: () {
                                                   Navigator.pop(context, 'OK');
-                                                  deleteRecipe(context);
+                                                  recipeDetailsController.deleteRecipe(context, recipeId, userId, imageUrl);
                                                   Navigator.pop(context, 'OK');
                                                 },
                                                 child: const Text('Delete'),
