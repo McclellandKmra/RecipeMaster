@@ -22,9 +22,10 @@ class HomeScreenState extends State<HomeScreen> {
       if (user == null) {
         throw Exception('Error fetching user');
       }
-      String userID = user.uid;
+      String userId = user.uid;
 
-      CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userID).collection('recipes');
+      print(userId);
+      CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userId).collection('recipes');
       return userRecipesCollection.snapshots().map((snapshot) {
         return snapshot.docs.map((doc) {
           return Recipe.fromMap(doc.data() as Map<String, dynamic>);

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../../main.dart';
 import '../../utils/widgets/navigation_drawer.dart' as custom;
 import '../home/controllers/home_controller.dart';
 import '../home/models/recipe.dart';
 import '../home/controllers/recipe_book_controller.dart';
 import '../recipeDetails/controllers/recipe_details_controller.dart';
+import '../authentication/screens/login/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
@@ -24,18 +25,38 @@ class AccountScreenState extends State<AccountScreen> {
   String userId = "";
 
   Future<void> deleteAccount(BuildContext context) async {
-    //Delete the recipes that belong to the account
-    String? recipeId = "";
-    getRecipes(context);
-    recipes.listen((recipeList) async {
-      for (int i = 0; i < recipeList.length; i++) {
-        recipeId = await recipeBookController.getRecipeId(userId, recipeList[i].name, recipeList[i].createdAt);
-        if (!context.mounted) return;
-        recipeDetailsController.deleteRecipe(context, userId, recipeId, recipeList[i].imageUrl);
+    DocumentReference userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+    try {
+      //Delete the recipes that belong to the account
+      QuerySnapshot recipesSnapshot = await userDoc.collection('recipes').get();
+      for (var doc in recipesSnapshot.docs) {
+        if (!context.mounted) break;
+        await recipeDetailsController.deleteRecipe(context, userId, doc.id, doc['imageUrl']);
       }
-    });
 
-    //homeController.handleSignout(context);
+      //Remove the user from firestore
+      await userDoc.delete();
+
+      //Remove the user from firebase authentication
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {await user.delete();}
+      else { 
+        if (!context.mounted) {
+          return;
+        }
+        _showSnackBar(context, "Error deleting user"); 
+      }
+
+      //Take the user back to the login page
+      navigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+        (route) => false, // Clears back stack
+      );
+    }
+    catch (e) {
+      if (!context.mounted) return;
+      _showSnackBar(context, "Error deleting account");
+    }
   }
 
   Future<void> getRecipes(BuildContext context) async {
@@ -65,6 +86,13 @@ class AccountScreenState extends State<AccountScreen> {
         throw Exception('Error fetching user'); 
       }
       userId = user.uid;
+  }
+
+  //For error messages
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
@@ -122,7 +150,7 @@ class AccountScreenState extends State<AccountScreen> {
                           actions: <Widget>[
                             TextButton(
                               onPressed: () {
-                                //Navigator.pop(context, 'OK');
+                                Navigator.pop(context, 'OK');
                                 deleteAccount(context);
                               },
                               child: const Text('Delete'),
