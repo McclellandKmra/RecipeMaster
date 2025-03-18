@@ -14,7 +14,8 @@ import 'dart:io';
 class EditRecipeScreen extends StatefulWidget{
   final VoidCallback onClose;
   final String recipeName;
-  const EditRecipeScreen({super.key, required this.onClose, required this.recipeName});
+  final DateTime? createdAt;
+  const EditRecipeScreen({super.key, required this.onClose, required this.recipeName, required this.createdAt});
 
   @override
   EditRecipeScreenState createState() => EditRecipeScreenState();
@@ -48,7 +49,7 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
         throw Exception('Error fetching user');
       }
       String userId = user.uid;
-      String? recipeId = await _recipeController.getRecipeId(widget.recipeName, userId);
+      String? recipeId = await _recipeController.getRecipeId(userId, widget.recipeName, widget.createdAt);
 
       DocumentSnapshot recipeDoc = await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).get();
 
@@ -90,7 +91,7 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
     if (_newImageUrl != null) {
       _deleteImage(_imageUrl);
       try {
-        _recipeController.editRecipe(_nameController.text.trim(), _newImageUrl!, tags, ingredients, steps, favorite);
+        _recipeController.editRecipe(_nameController.text.trim(), _newImageUrl!, tags, ingredients, steps, widget.createdAt, favorite);
       }
       catch (e) {
         if (!context.mounted) return;
@@ -99,7 +100,7 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
     }
     else {
       try {
-        _recipeController.editRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps, favorite);
+        _recipeController.editRecipe(_nameController.text.trim(), _imageUrl!, tags, ingredients, steps, widget.createdAt, favorite);
       }
       catch (e) {
         if (!context.mounted) return;

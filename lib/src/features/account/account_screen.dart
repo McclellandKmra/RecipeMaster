@@ -29,7 +29,7 @@ class AccountScreenState extends State<AccountScreen> {
     getRecipes(context);
     recipes.listen((recipeList) async {
       for (int i = 0; i < recipeList.length; i++) {
-        recipeId = await recipeBookController.getRecipeId(recipeList[i].name, userId);
+        recipeId = await recipeBookController.getRecipeId(userId, recipeList[i].name, recipeList[i].createdAt);
         if (!context.mounted) return;
         recipeDetailsController.deleteRecipe(context, userId, recipeId, recipeList[i].imageUrl);
       }

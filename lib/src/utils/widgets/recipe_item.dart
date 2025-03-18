@@ -38,7 +38,7 @@ class RecipeItem extends StatelessWidget {
            Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => RecipeDetailsScreen(recipeName: recipe.name),
+              builder: (context) => RecipeDetailsScreen(recipeName: recipe.name, createdAt: recipe.createdAt),
             ),
            );
         },

@@ -82,7 +82,7 @@ class CreateRecipeScreenState extends State<CreateRecipeScreen> {
     if (_imageFile == null) return null;
     String userId = await getUserId();
     try {
-      String fileName = userId + basename(_imageFile!.path);
+      String fileName = "${userId}_${DateTime.now().millisecondsSinceEpoch}_${basename(_imageFile!.path)}";
       Reference storageRef = FirebaseStorage.instance.ref().child('recipe_images/$fileName');
 
       UploadTask uploadTask = storageRef.putFile(_imageFile!);

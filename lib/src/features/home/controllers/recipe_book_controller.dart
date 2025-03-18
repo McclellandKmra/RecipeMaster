@@ -34,11 +34,11 @@ class RecipeBookController {
     }
   }
 
-  Future<void> editRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps, bool favorite) async {
+  Future<void> editRecipe(String name, String imageUrl, List<String> tags, List<Map<String, dynamic>> ingredients, List<TextEditingController> steps, DateTime? createdAt, bool favorite) async {
     try {
       String userId = await getUserId();
 
-      String? recipeId = await getRecipeId(name, userId);
+      String? recipeId = await getRecipeId(userId, name, createdAt);
 
       List<String> stepTexts = steps.map((controller) => controller.text).toList();
 
@@ -52,7 +52,7 @@ class RecipeBookController {
         "ingredients" : ingredients,
         "steps" : stepTexts,
         "imageUrl" : imageUrl,
-        "timestamp" : FieldValue.serverTimestamp(),
+        "createdAt" : FieldValue.serverTimestamp(),
         "favorite" : favorite
       });
     } 
@@ -61,11 +61,12 @@ class RecipeBookController {
     }
   }
 
-  Future<String?> getRecipeId(String recipeName, String userID) async {
+  Future<String?> getRecipeId(String userID, String recipeName, DateTime? createdAt) async {
     try {
       final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users').doc(userID).collection('recipes')
         .where('name', isEqualTo: recipeName)
+        .where('createdAt', isEqualTo: createdAt)
         .limit(1)
         .get();
       

@@ -9,7 +9,8 @@ import '../controllers/recipe_details_controller.dart';
 
 class RecipeDetailsScreen extends StatefulWidget {
   final String recipeName;
-  const RecipeDetailsScreen({super.key, required this.recipeName});
+  final DateTime? createdAt;
+  const RecipeDetailsScreen({super.key, required this.recipeName, required this.createdAt});
 
   @override
   RecipeDetailsScreenState createState() => RecipeDetailsScreenState();
@@ -34,7 +35,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
   Future<void> _fetchRecipeData() async{
     try{
       //Get Recipe ID 
-      recipeId = await RecipeBookController().getRecipeId(widget.recipeName, userId);
+      recipeId = await RecipeBookController().getRecipeId(userId, widget.recipeName, widget.createdAt);
       if (recipeId == null) {
         _showSnackBar("Error fetching recipe");
       }
@@ -280,7 +281,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     child: Container(
                       color: Colors.black.withValues(alpha: 0.5), // Semi-transparent background
                       child: Center(
-                        child: EditRecipeScreen(onClose: _onClose, recipeName: widget.recipeName), // Pass onClose function
+                        child: EditRecipeScreen(onClose: _onClose, recipeName: widget.recipeName, createdAt: widget.createdAt), // Pass onClose function
                       ),
                     )
                   )
