@@ -23,8 +23,6 @@ class HomeScreenState extends State<HomeScreen> {
         throw Exception('Error fetching user');
       }
       String userId = user.uid;
-
-      print(userId);
       CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userId).collection('recipes');
       return userRecipesCollection.snapshots().map((snapshot) {
         return snapshot.docs.map((doc) {

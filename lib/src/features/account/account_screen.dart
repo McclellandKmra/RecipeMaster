@@ -28,11 +28,15 @@ class AccountScreenState extends State<AccountScreen> {
     DocumentReference userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
     try {
       //Delete the recipes that belong to the account
+      List<Future<void>> deletionTasks = [];
       QuerySnapshot recipesSnapshot = await userDoc.collection('recipes').get();
       for (var doc in recipesSnapshot.docs) {
         if (!context.mounted) break;
-        await recipeDetailsController.deleteRecipe(context, userId, doc.id, doc['imageUrl']);
+        deletionTasks.add(recipeDetailsController.deleteRecipe(context, userId, doc.id, doc['imageUrl']));
       }
+
+      //Takes a list of async functions (like the delete recipe calls) and waits for all of them to complete before continuing. 
+      await Future.wait(deletionTasks);
 
       //Remove the user from firestore
       await userDoc.delete();
