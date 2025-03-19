@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../../home/screens/home_screen.dart';
 import '../../screens/register/register_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginController {
   final TextEditingController emailController = TextEditingController();
@@ -32,26 +32,31 @@ class LoginController {
     }
     //Catch cases based on various possible errors
     on FirebaseAuthException catch (e) {
+      //Non-matching email or password
       if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
         if (!context.mounted) return;
         _showSnackBar(context, "Either the email or password is incorrect");
         return;
       }
+      //Email is not in correct format
       else if (e.code == 'invalid-email') {
         if (!context.mounted) return;
         _showSnackBar(context, "Please provide a valid email address");
         return;
       }
+      //Email is registered, but not available?
       else if (e.code == "user-disabled") {
         if (!context.mounted) return;
         _showSnackBar(context, "The provided email is not available");
         return;
       }
+      //Too many login attempts in too short of a period
       else if (e.code == "too-many-requests") {
         if (!context.mounted) return;
         _showSnackBar(context, "You have attemped to login too many times too quickly.");
         return;
       }
+      //Base error case
       else {
         if (!context.mounted) return;
         _showSnackBar(context, "FirebaseAuthException: ${e.message}");
@@ -69,8 +74,7 @@ class LoginController {
     Navigator.pushReplacement(
       context, 
       MaterialPageRoute(builder: (context) => const HomeScreen())
-    );
-    
+    ); 
     return;
   }
 
@@ -80,7 +84,6 @@ class LoginController {
       context, 
       MaterialPageRoute(builder: (context) => const RegisterScreen())
       );
-    
     return;
   }
 

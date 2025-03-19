@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart';
-import '../../screens/login/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
+import '../../screens/login/login_screen.dart';
 import '../../../../constants/tags.dart';
 
 class RegisterController {
@@ -24,13 +24,13 @@ class RegisterController {
       return;
     }
 
-    //Uses EmailValidator to ensure proper email syntax
+    //Uses EmailValidator package to ensure proper email syntax
     if (!EmailValidator.validate(email)) {
        _showSnackBar(context, "Please provide a valid email address");
        return;
     }
 
-    //Checks for valid password length. May check for complexity later
+    //Checks for valid password length. May check for complexity later?
     if (password.length < 8) {
       _showSnackBar(context, "Provided password is too weak");
        return;
@@ -61,21 +61,25 @@ class RegisterController {
     }
     //Catch cases for various errors
     on FirebaseAuthException catch (e) {
+      //Email already exists in firebase authentication
       if (e.code == 'email-already-in-use') {
         if (!context.mounted) return;
         _showSnackBar(context, "This email has already been registered");
         return;
       }
+      //Email format is invalid
       else if (e.code == 'invalid-email') {
         if (!context.mounted) return;
         _showSnackBar(context, "Please provide a valid email address");
         return;
       }
+      //Password is not sufficiently strong
       else if (e.code == "weak-password") {
         if (!context.mounted) return;
         _showSnackBar(context, "Provided password is too weak");
         return;
       }
+      //Base error case
       else {
         if (!context.mounted) return;
         _showSnackBar(context, "FirebaseAuthException: ${e.message}");
@@ -88,18 +92,16 @@ class RegisterController {
       return;
     }
 
-
-
     if (!context.mounted) return;
     //Navigates the user to the login screen upon successful account creation
     Navigator.pushReplacement(
       context, 
       MaterialPageRoute(builder: (context) => const LoginScreen())
       );
-    
     return;
   }
 
+  //Sets the users default tags
   Future<void> saveTags(User user, BuildContext context) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({'tags': availableTags});
@@ -117,7 +119,6 @@ class RegisterController {
       context, 
       MaterialPageRoute(builder: (context) => const LoginScreen())
       );
-    
     return;
   }
 

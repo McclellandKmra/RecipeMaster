@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../utils/widgets/navigation_drawer.dart' as custom;
 import 'recipe_book.dart';
 import '../models/recipe.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,13 +16,16 @@ class HomeScreenState extends State<HomeScreen> {
   List<Recipe> recipes = [];
   List<Recipe> filteredRecipes = [];
 
+  //Gathers a user's recipes from firebase
   Stream<List<Recipe>> recipeStream() {
     try {
+      //Gets the current userId value
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception('Error fetching user');
       }
       String userId = user.uid;
+      //Uses a snapshot to obtain all recipes that belong to a user in firebase firestore
       CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userId).collection('recipes');
       return userRecipesCollection.snapshots().map((snapshot) {
         return snapshot.docs.map((doc) {
@@ -75,7 +78,7 @@ class HomeScreenState extends State<HomeScreen> {
       drawer: custom.NavigationDrawer(),
       body: Stack(
         children: [
-          // Background Image
+          //Background Image
           Positioned.fill(
             child: Image.asset(
               'assets/images/Background.png',
@@ -102,7 +105,7 @@ class HomeScreenState extends State<HomeScreen> {
                   //Set initial filtered recipes list, including all recipes
                   filteredRecipes = List.from(recipes);
                   
-                  //Display the recipes on the home screen notebook page
+                  //Pass the recipes to display them on the home screen notebook page
                   return RecipeBookScreen(recipes: filteredRecipes);
                 },
               ),

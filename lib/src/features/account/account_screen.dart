@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../main.dart';
 import '../../utils/widgets/navigation_drawer.dart' as custom;
 import '../home/controllers/home_controller.dart';
@@ -6,8 +8,6 @@ import '../home/models/recipe.dart';
 import '../home/controllers/recipe_book_controller.dart';
 import '../recipeDetails/controllers/recipe_details_controller.dart';
 import '../authentication/screens/login/login_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class AccountScreen extends StatefulWidget {
@@ -24,6 +24,7 @@ class AccountScreenState extends State<AccountScreen> {
   Stream<List<Recipe>> recipes = Stream.empty();
   String userId = "";
 
+  //Deletes the users account from firebase, including all recipes
   Future<void> deleteAccount(BuildContext context) async {
     DocumentReference userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
     try {
@@ -32,6 +33,7 @@ class AccountScreenState extends State<AccountScreen> {
       QuerySnapshot recipesSnapshot = await userDoc.collection('recipes').get();
       for (var doc in recipesSnapshot.docs) {
         if (!context.mounted) break;
+        //Each task calls deleteRecipe, from the recipe details controller, which removes the recipe from firestore, and its associated image in firebase storage.
         deletionTasks.add(recipeDetailsController.deleteRecipe(context, userId, doc.id, doc['imageUrl']));
       }
 
@@ -63,6 +65,7 @@ class AccountScreenState extends State<AccountScreen> {
     }
   }
 
+  //Gathers all recipes, used in case user deletes account
   Future<void> getRecipes(BuildContext context) async {
     CollectionReference userRecipesCollection = FirebaseFirestore.instance.collection('users').doc(userId).collection('recipes');
     recipes = userRecipesCollection.snapshots().map((snapshot) {
@@ -83,8 +86,8 @@ class AccountScreenState extends State<AccountScreen> {
     await getUserId();
   }
   
+  //Gets current userId from firebase
   Future<void> getUserId() async {
-    //Get user
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) { 
         throw Exception('Error fetching user'); 
@@ -142,17 +145,17 @@ class AccountScreenState extends State<AccountScreen> {
           ),
           Align(
             alignment: Alignment.center,
-            child: ElevatedButton(
+            child: ElevatedButton( //Delete account button
               onPressed: 
                   () => showDialog<String>(
                     context: context,
                     builder:
-                        (BuildContext context) => AlertDialog(
+                        (BuildContext context) => AlertDialog( //Confirmation button
                           actionsOverflowAlignment: OverflowBarAlignment.center,
                           title: Text('Delete Account?'),
                           content: const Text('This action cannot be undone.'),
                           actions: <Widget>[
-                            TextButton(
+                            TextButton( 
                               onPressed: () {
                                 Navigator.pop(context, 'OK');
                                 deleteAccount(context);
