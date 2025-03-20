@@ -19,7 +19,6 @@ class CreateRecipeScreen extends StatefulWidget {
 class CreateRecipeScreenState extends State<CreateRecipeScreen> {
   final RecipeBookController _recipeController = RecipeBookController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController imageUrlController = TextEditingController();
 
   List<TextEditingController> ingredientNames = [];
   List<TextEditingController> ingredientAmounts = [];
@@ -39,6 +38,12 @@ class CreateRecipeScreenState extends State<CreateRecipeScreen> {
   void initState() {
     super.initState();
     fetchAvailableTags();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchAvailableTags() async {

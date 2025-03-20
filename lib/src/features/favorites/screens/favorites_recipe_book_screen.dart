@@ -20,6 +20,7 @@ class FavoriteRecipeBookScreenState extends State<FavoriteRecipeBookScreen> {
 
   int get totalPages => (widget.recipes.length / recipesPerPage).ceil();
 
+  //Navigates to the page of recipes specificed by the user, must be between 0 and the number of recipes/6
   void _jumpToPage(int page) {
     if (page >= 0 && page < totalPages) {
       _pageController.jumpToPage(page);
