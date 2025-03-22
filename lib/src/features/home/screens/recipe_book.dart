@@ -124,10 +124,6 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
                   ],
                 ),
               ),
-              
-
-              
-
               SizedBox(height: 13),
               Expanded(
                 child: PageView.builder(
@@ -143,7 +139,7 @@ class RecipeBookScreenState extends State<RecipeBookScreen> {
                       itemBuilder: (context, index) {
                         return RecipeItem(recipe: pageRecipes[index]);
                       },
-                      separatorBuilder: (context, index) => SizedBox(height: 23),
+                      separatorBuilder: (context, index) => SizedBox(height: 26),
                     );
                   }
                 ),

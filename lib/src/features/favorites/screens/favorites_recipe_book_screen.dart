@@ -71,7 +71,7 @@ class FavoriteRecipeBookScreenState extends State<FavoriteRecipeBookScreen> {
                       itemBuilder: (context, index) {
                         return RecipeItem(recipe: pageRecipes[index]);
                       },
-                      separatorBuilder: (context, index) => SizedBox(height: 28),
+                      separatorBuilder: (context, index) => SizedBox(height: 26),
                     );
                   }
                 ),

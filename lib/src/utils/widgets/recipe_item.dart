@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:recipemaster/src/features/recipeDetails/screens/recipe_details_screen.dart';
 import '../../features/home/models/recipe.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 //Class for each item in the recipe book. Displays the name, image, tags, and its favorited status. Can be clicked on for full recipe details
 class RecipeItem extends StatelessWidget {
