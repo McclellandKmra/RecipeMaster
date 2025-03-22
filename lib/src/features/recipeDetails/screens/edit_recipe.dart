@@ -151,6 +151,7 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
     );
   }
 
+  //Puts the ingredient name and amount into one ingredient item to be stored in a list once the user is done creating the recipe
   void _createIngredientsMap() {
     for (int i = 0; i < ingredientNames.length; i++) {
       ingredients.add({
@@ -160,6 +161,7 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
     }
   }
 
+  //Adds an ingredient's name and amount to their respective lists
   void _addIngredient() {
     setState(() {
       ingredientNames.add(TextEditingController());
@@ -167,6 +169,7 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
     });
   }
 
+  //Removes an ingredient's name and amount from their lists
   void _removeIngredient(int index) {
     setState(() {
       ingredientNames[index].dispose();
@@ -176,12 +179,14 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
     });
   }
 
+  //Adds a step to the list of steps
   void _addStep() {
     setState(() {
       steps.add(TextEditingController());
     });
   }
 
+  //Removes a step from the list of steps
   void _removeStep(int index) {
     setState(() {
       steps[index].dispose();
@@ -189,6 +194,7 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
     });
   }
 
+  //Adds a tag to the list of tags, assuming it hasn't already been added
   void _addTag(String tag) {
     if (!tags.contains(tag)) {
       setState(() {
@@ -198,6 +204,7 @@ class EditRecipeScreenState extends State<EditRecipeScreen> {
     }
   }
 
+  //Removes a tag from the list of tags
   void _removeTag(String tag) {
     setState(() {
       tags.remove(tag);

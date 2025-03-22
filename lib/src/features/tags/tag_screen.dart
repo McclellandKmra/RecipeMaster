@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../utils/widgets/navigation_drawer.dart' as custom;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../utils/widgets/navigation_drawer.dart' as custom;
 
 class TagScreen extends StatefulWidget {
   const TagScreen({super.key});
@@ -21,6 +21,7 @@ class TagScreenState extends State<TagScreen> {
     fetchTags();
   }
 
+  //Gets the userId for the current user
   Future<String> getUserId() async {
     //Get user
       User? user = FirebaseAuth.instance.currentUser;
@@ -31,6 +32,7 @@ class TagScreenState extends State<TagScreen> {
       return userId;
   }
 
+  //Gets the list of all available tags for a user, both default and custom
   Future<void> fetchTags() async{
     try {
       List<String> userTags = [];
@@ -64,11 +66,11 @@ class TagScreenState extends State<TagScreen> {
     }
   }
 
+  //Adds a new, custom tag to a user's collection of available tags
   Future<void> createTag(BuildContext context, String tag) async{
     //Get user id
     String userId = await getUserId();
 
-    //Firebase query
     final userTags = FirebaseFirestore.instance.collection("users").doc(userId);
     try {
       await userTags.update({'Tags': FieldValue.arrayUnion([tag])});
@@ -81,6 +83,7 @@ class TagScreenState extends State<TagScreen> {
     catch (e) { return; } 
   }
 
+  //Deletes a specific tag from a user's tag collection
   Future<void> deleteTag(BuildContext context, String tag) async{
     //Get user id
     String userId = await getUserId();

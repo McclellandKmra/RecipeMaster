@@ -30,7 +30,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
 
   String userId = "";
 
-
+  //Fetches the recipe information for a specific recipe from firestore
   Future<void> _fetchRecipeData() async{
     try{
       //Get Recipe ID 
@@ -42,6 +42,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     } catch (e) { _showSnackBar("Error: ${e.toString()}"); }
   }
 
+  //Helper function for _fetchRecipeData, actually gets the recipe
   Future<void> _getRecipe() async {
     try {
       DocumentSnapshot recipeDoc = await FirebaseFirestore.instance.collection("users").doc(userId).collection("recipes").doc(recipeId).get();
@@ -63,6 +64,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     } catch (e) { _showSnackBar("Error fetching recipe"); }
   }
 
+  //Sets a recipe's favorite status to either true or false, depending on its current state
   Future<void> _toggleFavorite() async {
     try {
       bool newFavoriteStatus = !favorite;
@@ -74,6 +76,7 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     catch (e) { _showSnackBar("Error updating favorite status"); }
   }
 
+  //Gets the userId for the current user
   Future<void> getUserId() async {
     //Get user
       User? user = FirebaseAuth.instance.currentUser;
