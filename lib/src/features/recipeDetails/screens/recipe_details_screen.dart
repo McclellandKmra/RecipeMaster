@@ -226,40 +226,51 @@ class RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                                 child: Text("Edit Recipe")
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: ElevatedButton(
-                                onPressed: 
-                                    () => showDialog<String>(
-                                      context: context,
-                                      builder:
-                                          (BuildContext context) => AlertDialog(
-                                            actionsOverflowAlignment: OverflowBarAlignment.center,
-                                            title: Text('Delete \n${widget.recipeName}?'),
-                                            content: const Text('This action cannot be undone.'),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context, 'OK');
-                                                  recipeDetailsController.deleteRecipe(context, userId, recipeId, imageUrl);
-                                                  Navigator.pop(context, 'OK');
-                                                },
-                                                child: const Text('Delete'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () => Navigator.pop(context, 'Cancel'),
-                                                child: const Text('Cancel'),
-                                              ),
-                                            ],
-                                          ),
+                            if (!favorite)
+                              Align(
+                                alignment: Alignment.center,
+                                child: ElevatedButton(
+                                  onPressed: () => showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) => AlertDialog(
+                                      actionsOverflowAlignment: OverflowBarAlignment.center,
+                                      title: Text('Delete \n${widget.recipeName}?'),
+                                      content: const Text('This action cannot be undone.'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, 'OK');
+                                            recipeDetailsController.deleteRecipe(context, userId, recipeId, imageUrl);
+                                            Navigator.pop(context, 'OK');
+                                          },
+                                          child: const Text('Delete'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                                          child: const Text('Cancel'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  style: ButtonStyle(
+                                    backgroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 202, 52, 52)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 255, 255, 255)),
+                                  ),
+                                  child: Text("Delete Recipe"),
                                 ),
-                                style: ButtonStyle(
-                                  backgroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 202, 52, 52)),
-                                  foregroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 255, 255, 255)),
-                                ),
-                                child: Text("Delete Recipe")
                               ),
-                            ),
+                            if (favorite)
+                              Align(
+                                alignment: Alignment.center,
+                                child: ElevatedButton(
+                                  onPressed: () => _showSnackBar("Remove favorite status to delete"),
+                                  style: ButtonStyle(
+                                    backgroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 202, 52, 52)),
+                                    foregroundColor: WidgetStateProperty.all<Color>(Color.fromARGB(255, 255, 255, 255)),
+                                  ),
+                                  child: Text("Cannot Delete Favorite"),
+                                ),
+                              ),
                             Align(
                               alignment: Alignment.center,
                               child: ElevatedButton(

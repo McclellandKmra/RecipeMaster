@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:marquee/marquee.dart';
 import 'package:recipemaster/src/features/recipeDetails/screens/recipe_details_screen.dart';
 import '../../features/home/models/recipe.dart';
 
@@ -27,7 +28,45 @@ class RecipeItem extends StatelessWidget {
             errorWidget: (context, url, error) => Icon(Icons.error),
           )
         ),
-        title: Text(recipe.name),
+        title: LayoutBuilder(
+          builder: (context, constraints) {
+            //Measure the width of the text
+            final textPainter = TextPainter(
+              text: TextSpan(
+                text: recipe.name,
+                style: TextStyle(fontSize: 16),
+              ),
+              maxLines: 1,
+              textDirection: TextDirection.ltr,
+            )..layout(maxWidth: constraints.maxWidth);
+
+            //Check if the text overflows (ie is longer than 1 line)
+            final isOverflowing = textPainter.didExceedMaxLines;
+
+            //Use Marquee if overflowing, otherwise use Text
+            return isOverflowing
+                ? SizedBox(
+                    height: 20,
+                    child: Marquee(
+                      text: recipe.name,
+                      style: TextStyle(fontSize: 16),
+                      scrollAxis: Axis.horizontal,
+                      blankSpace: 20.0,
+                      velocity: 20.0,
+                      pauseAfterRound: Duration(seconds: 1),
+                      startPadding: 10.0,
+                      accelerationDuration: Duration(seconds: 1),
+                      accelerationCurve: Curves.linear,
+                      decelerationDuration: Duration(milliseconds: 500),
+                      decelerationCurve: Curves.easeOut,
+                    ),
+                  )
+                : Text(
+                    recipe.name,
+                    style: TextStyle(fontSize: 16),
+                  );
+          },
+        ),
         subtitle: Text(recipe.tags.join(", ")),
         trailing: Icon(
           recipe.favorite ? Icons.star : Icons.star_border,
