@@ -14,11 +14,14 @@ class FavoriteRecipeBookScreen extends StatefulWidget {
 class FavoriteRecipeBookScreenState extends State<FavoriteRecipeBookScreen> {
   final PageController  _pageController = PageController();
   final TextEditingController _pageTextController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   int recipesPerPage = 6;
   int currPage = 0;
 
   int get totalPages => (widget.recipes.length / recipesPerPage).ceil();
+
+  List<Recipe> filteredRecipes = [];
 
   //Navigates to the page of recipes specificed by the user, must be between 0 and the number of recipes/6
   void _jumpToPage(int page) {
@@ -26,6 +29,20 @@ class FavoriteRecipeBookScreenState extends State<FavoriteRecipeBookScreen> {
       _pageController.jumpToPage(page);
       setState(() => currPage = page);
     }
+  }
+
+  void filterRecipes(String query) {
+    setState(() {
+      if (query.isEmpty) {filteredRecipes = List.from(widget.recipes);}
+      else {
+        query = query.toLowerCase();
+        filteredRecipes = widget.recipes.where((recipe) {
+          return recipe.name.toLowerCase().contains(query) ||
+                 recipe.tags.any((tag) => tag.toLowerCase().contains(query)) ||
+                 recipe.ingredients.any((ingredient) => ingredient["name"].toLowerCase().contains(query));
+        }).toList();
+      }
+    });
   }
 
   @override
@@ -51,6 +68,21 @@ class FavoriteRecipeBookScreenState extends State<FavoriteRecipeBookScreen> {
                       style: TextStyle(
                         fontFamily: "JustAnotherHand",
                         fontSize: 30,
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            labelText: "Search Recipes",
+                            prefixIcon: Icon(Icons.search),
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 5,vertical: 2),
+                          ),
+                          onChanged: filterRecipes,
+                        )
                       ),
                     ),
                   ],
