@@ -1,5 +1,6 @@
 Recipe Master is a free application for people who like to cook! With Recipe Master you can create and save recipes for easy access on any device.
 
+Development will slow down on this project, but I still plan to finish all of the intended features, including deploying this on a physical device.
 # How to use Recipe Master:
 ## Account Creation
 Creating an account is simple, all you need is an email and a password to get started.
